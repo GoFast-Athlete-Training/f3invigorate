@@ -1,0 +1,102 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Reference to existing Athlete model in GoFast database
+// DO NOT modify this model - only add relations
+// This is a minimal representation for Prisma to understand relations
+model Athlete {
+  id         String @id @default(cuid())
+  firebaseId String @unique
+  email      String @unique
+
+  // Relations for F3 Invigorate
+  attendanceRecords AttendanceRecord[]
+  effortRecords     EffortRecord[]
+  weeklyReflections WeeklyReflection[]
+  selfReportEntries SelfReportEntry[]
+
+  // Note: This model exists in the GoFast database
+  // We only define it here to establish relations
+  // All other fields exist in the actual database but are not needed for relations
+  @@map("athletes")
+}
+
+model AttendanceRecord {
+  id        String   @id @default(cuid())
+  athleteId String
+  aoId      String
+  date      DateTime
+  source    AttendanceSource
+  athlete   Athlete  @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("attendance_records")
+}
+
+enum AttendanceSource {
+  BACKBLAST
+  SELF
+}
+
+model EffortRecord {
+  id          String   @id @default(cuid())
+  athleteId   String
+  date        DateTime
+  calories    Int
+  durationSec Int
+  calPerMin   Float
+  athlete     Athlete  @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("effort_records")
+}
+
+model WeeklyReflection {
+  id        String   @id @default(cuid())
+  athleteId String
+  date      DateTime @default(now())
+  mood      String?
+  wins      String?
+  struggles String?
+  intention String?
+  athlete   Athlete  @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("weekly_reflections")
+}
+
+model SelfReportEntry {
+  id          String            @id @default(cuid())
+  athleteId   String
+  date        DateTime          @default(now())
+  category    SelfReportCategory
+  note        String?
+  athlete     Athlete            @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("self_report_entries")
+}
+
+enum SelfReportCategory {
+  FELLOWSHIP
+  SERVICE
+  MARRIAGE_FAMILY
+  DIET_QUEEN
+  MENTAL_HEALTH
+  SPIRITUAL
+}
+

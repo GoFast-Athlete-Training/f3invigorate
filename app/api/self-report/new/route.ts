@@ -1,0 +1,50 @@
+import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import { getCurrentAthlete } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+
+const selfReportSchema = z.object({
+  category: z.enum([
+    "FELLOWSHIP",
+    "SERVICE",
+    "MARRIAGE_FAMILY",
+    "DIET_QUEEN",
+    "MENTAL_HEALTH",
+    "SPIRITUAL",
+  ]),
+  note: z.string().optional(),
+});
+
+export async function POST(request: NextRequest) {
+  try {
+    const athlete = await getCurrentAthlete();
+    if (!athlete) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const body = await request.json();
+    const validated = selfReportSchema.parse(body);
+
+    // Create self-report entry
+    await prisma.selfReportEntry.create({
+      data: {
+        athleteId: athlete.id,
+        category: validated.category,
+        note: validated.note || null,
+      },
+    });
+
+    return NextResponse.json({ success: true, message: "Self-report created successfully" });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json({ error: error.errors[0].message }, { status: 400 });
+    }
+
+    console.error("Error creating self-report:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
+
