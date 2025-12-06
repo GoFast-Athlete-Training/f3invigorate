@@ -1,9 +1,11 @@
 # F3 Invigorate Next.js MVP
 
-A Next.js 14 App Router application for F3 Invigorate - tracking attendance, effort, and reflections.
+A Next.js 15 App Router application for F3 Invigorate - tracking attendance, effort, and reflections for F3 workout groups.
 
 ## Features
 
+- **Splash Screen**: Clean "f3" branding with black design
+- **Authentication**: Firebase Auth with Google and Email signup/signin (similar to gofastapp-mvp)
 - **Q Backblast → Attendance**: Create backblast entries that automatically log attendance for multiple PAX
 - **Self-Report Attendance**: Log your own attendance at an AO
 - **Manual Effort Entry**: Log workout effort (calories, duration) manually
@@ -12,12 +14,13 @@ A Next.js 14 App Router application for F3 Invigorate - tracking attendance, eff
 
 ## Tech Stack
 
-- **Next.js 14** (App Router)
+- **Next.js 15** (App Router)
 - **TypeScript**
 - **TailwindCSS**
 - **Prisma ORM** (connected to existing GoFast PostgreSQL database)
 - **Firebase Auth** (client-side + server-side admin SDK)
 - **Zod** (validation)
+- **Axios** (API client with automatic token injection)
 
 ## Setup
 
@@ -73,9 +76,14 @@ All records are tied to `Athlete.id` via foreign keys.
 
 ## Authentication
 
-Uses Firebase Auth with:
-- Client-side login via `firebaseClient.ts`
-- Server-side token verification via `firebaseAdmin.ts`
+Uses Firebase Auth with pattern similar to gofastapp-mvp:
+- **Splash Screen** (`/`) - Shows "f3" branding, checks auth state, routes to signup or dashboard
+- **Signup/Signin** (`/signup`) - Firebase authentication (Google or Email)
+- **Athlete Creation** - After auth, calls `/api/athlete/create` to create/find athlete in database
+- **Dashboard** (`/dashboard`) - Main dashboard (requires authentication)
+- Client-side login via `lib/firebase.ts` (re-exports from `firebaseClient.ts`)
+- Server-side token verification via `lib/firebaseAdmin.ts`
+- API client (`lib/api.ts`) with automatic Firebase token injection
 - `getCurrentAthlete()` function to get the current authenticated athlete
 
 ## Project Structure
@@ -83,6 +91,7 @@ Uses Firebase Auth with:
 ```
 /app
   /api
+    /athlete/create/route.ts (create/find athlete after Firebase auth)
     /attendance/self/route.ts
     /backblast/create/route.ts
     /effort/manual/route.ts
@@ -90,17 +99,31 @@ Uses Firebase Auth with:
     /self-report/new/route.ts
   /attendance/self/page.tsx
   /backblast/create/page.tsx
+  /dashboard/page.tsx (main dashboard)
   /effort/manual/page.tsx
   /reflection/week/page.tsx
   /self-report/new/page.tsx
-  /login/page.tsx
-  page.tsx (dashboard)
+  /signup/page.tsx (signup/signin page)
+  page.tsx (splash screen)
 /lib
+  api.ts (Axios client with token injection)
   auth.ts (getCurrentAthlete)
-  firebaseClient.ts
-  firebaseAdmin.ts
+  firebase.ts (re-exports from firebaseClient)
+  firebaseClient.ts (Firebase client setup)
+  firebaseAdmin.ts (Firebase Admin SDK)
   prisma.ts
 /prisma
   schema.prisma
+/docs
+  APP_PURPOSE.md (application purpose and architecture)
 ```
+
+## Documentation
+
+See `docs/APP_PURPOSE.md` for detailed information about:
+- What F3 Invigorate is and its purpose
+- Core features and use cases
+- Architecture overview
+- Design philosophy
+- Future potential enhancements
 

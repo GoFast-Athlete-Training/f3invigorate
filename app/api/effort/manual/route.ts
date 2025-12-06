@@ -3,6 +3,9 @@ import { z } from "zod";
 import { getCurrentAthlete } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
+// Force dynamic rendering to prevent build-time execution
+export const dynamic = "force-dynamic";
+
 const manualEffortSchema = z.object({
   calories: z.coerce.number().int().positive("Calories must be positive"),
   durationMinutes: z.coerce.number().int().positive("Duration must be positive"),

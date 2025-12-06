@@ -3,6 +3,9 @@ import { z } from "zod";
 import { getCurrentAthlete } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
+// Force dynamic rendering to prevent build-time execution
+export const dynamic = "force-dynamic";
+
 const createBackblastSchema = z.object({
   ao: z.string().min(1, "AO is required"),
   date: z.string().datetime().or(z.string().regex(/^\d{4}-\d{2}-\d{2}$/)),

@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { z } from "zod";
 
+// Force dynamic rendering to prevent build-time execution
+export const dynamic = "force-dynamic";
+
 const setTokenSchema = z.object({
   token: z.string().min(1, "Token is required"),
 });

@@ -3,6 +3,9 @@ import { z } from "zod";
 import { getCurrentAthlete } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
+// Force dynamic rendering to prevent build-time execution
+export const dynamic = "force-dynamic";
+
 const weeklyReflectionSchema = z.object({
   mood: z.string().optional(),
   wins: z.string().optional(),
