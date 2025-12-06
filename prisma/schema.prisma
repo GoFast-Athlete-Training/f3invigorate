@@ -8,12 +8,35 @@ datasource db {
 }
 
 // Reference to existing Athlete model in GoFast database
-// DO NOT modify this model - only add relations
-// This is a minimal representation for Prisma to understand relations
+// Matches the structure from gofastapp-mvp and trainingmvp
 model Athlete {
-  id         String @id @default(cuid())
-  firebaseId String @unique
-  email      String @unique
+  id String @id @default(cuid())
+
+  // Auth
+  firebaseId String  @unique
+  email      String?
+
+  // Company Link (Single-tenant) - REQUIRED
+  companyId String
+  company   GoFastCompany @relation(fields: [companyId], references: [id])
+
+  // Universal profile (optional fields - exist in DB but not all needed for F3)
+  firstName    String?
+  lastName     String?
+  gofastHandle String?   @unique
+  photoURL     String?
+  phoneNumber  String?
+  birthday     DateTime?
+  gender       String?
+  city         String?
+  state        String?
+  primarySport String?
+  bio          String?
+  instagram    String?
+
+  // System fields
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations for F3 Invigorate
   attendanceRecords AttendanceRecord[]
@@ -21,10 +44,28 @@ model Athlete {
   weeklyReflections WeeklyReflection[]
   selfReportEntries SelfReportEntry[]
 
-  // Note: This model exists in the GoFast database
-  // We only define it here to establish relations
-  // All other fields exist in the actual database but are not needed for relations
+  // Note: Many other fields exist in the actual database (training, Garmin, etc.)
+  // but are not needed for F3 Invigorate relations
   @@map("athletes")
+}
+
+model GoFastCompany {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  address   String?
+  city      String?
+  state     String?
+  zip       String?
+  domain    String?
+
+  // Relations
+  athletes Athlete[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("go_fast_companies")
 }
 
 model AttendanceRecord {
