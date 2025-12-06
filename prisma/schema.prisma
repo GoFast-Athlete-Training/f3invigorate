@@ -7,96 +7,155 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Reference to existing Athlete model in GoFast database
+// Matches the structure from gofastapp-mvp exactly
+model Athlete {
+  id String @id @default(cuid())
+
+  // Auth
+  firebaseId String  @unique
+  email      String?
+
+  // Company Link (Single-tenant)
+  companyId String
+  company   GoFastCompany @relation(fields: [companyId], references: [id])
+
+  // Universal profile
+  firstName    String?
+  lastName     String?
+  gofastHandle String?   @unique
+  photoURL     String?
+  phoneNumber  String?
+  birthday     DateTime?
+  gender       String?
+  city         String?
+  state        String?
+  primarySport String?
+  bio          String?
+  instagram    String?
+
+  // Training profile (future)
+  myCurrentPace       String?
+  myWeeklyMileage     Int?
+  myTrainingGoal      String?
+  myTrainingStartDate DateTime?
+  myTargetRace        String?
+  preferredDistance   String?
+  myPaceRange         String?
+  timePreference      String?
+  myRunningGoals      String?
+
+  // Garmin PKCE Integration
+  garmin_user_id          String?   @unique
+  garmin_access_token     String?
+  garmin_refresh_token    String?
+  garmin_expires_in       Int?
+  garmin_scope            String?
+  garmin_connected_at     DateTime?
+  garmin_last_sync_at     DateTime?
+  garmin_is_connected     Boolean   @default(false)
+  garmin_disconnected_at  DateTime?
+  garmin_permissions      Json?
+  garmin_user_profile     Json?
+  garmin_user_sleep       Json?
+  garmin_user_preferences Json?
+
+  // Strava (future)
+  strava_id            Int?    @unique
+  strava_access_token  String?
+  strava_refresh_token String?
+  strava_expires_at    Int?
+
+  // System fields
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations for F3 Invigorate
+  attendanceRecords AttendanceRecord[]
+  effortRecords     EffortRecord[]
+  weeklyReflections WeeklyReflection[]
+  selfReportEntries SelfReportEntry[]
+
+  @@map("athletes")
+}
+
 model GoFastCompany {
-  id        String     @id
+  id        String   @id @default(cuid())
   name      String
-  slug      String     @unique
+  slug      String   @unique
   address   String?
   city      String?
   state     String?
   zip       String?
   domain    String?
-  createdAt DateTime   @default(now())
-  updatedAt DateTime
-  athletes  athletes[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  athletes Athlete[]
 }
 
-model athletes {
-  id                  String                @id
-  firebaseId          String                @unique
-  email               String?
-  companyId           String
-  firstName           String?
-  lastName            String?
-  gofastHandle        String?               @unique
-  photoURL            String?
-  phoneNumber         String?
-  birthday            DateTime?
-  gender              String?
-  city                String?
-  state               String?
-  primarySport        String?
-  bio                 String?
-  instagram           String?
-  createdAt           DateTime              @default(now())
-  updatedAt           DateTime
-  GoFastCompany       GoFastCompany         @relation(fields: [companyId], references: [id])
-  attendance_records  attendance_records[]
-  effort_records      effort_records[]
-  self_report_entries self_report_entries[]
-  weekly_reflections  weekly_reflections[]
-}
-
-model attendance_records {
-  id        String           @id
+model AttendanceRecord {
+  id        String   @id @default(cuid())
   athleteId String
   aoId      String
   date      DateTime
   source    AttendanceSource
-  createdAt DateTime         @default(now())
-  updatedAt DateTime
-  athletes  athletes         @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+  athlete   Athlete  @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("attendance_records")
 }
 
-model effort_records {
-  id          String   @id
+enum AttendanceSource {
+  BACKBLAST
+  SELF
+}
+
+model EffortRecord {
+  id          String   @id @default(cuid())
   athleteId   String
   date        DateTime
   calories    Int
   durationSec Int
   calPerMin   Float
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime
-  athletes    athletes @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+  athlete     Athlete  @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("effort_records")
 }
 
-model self_report_entries {
-  id        String             @id
-  athleteId String
-  date      DateTime           @default(now())
-  category  SelfReportCategory
-  note      String?
-  createdAt DateTime           @default(now())
-  updatedAt DateTime
-  athletes  athletes           @relation(fields: [athleteId], references: [id], onDelete: Cascade)
-}
-
-model weekly_reflections {
-  id        String   @id
+model WeeklyReflection {
+  id        String   @id @default(cuid())
   athleteId String
   date      DateTime @default(now())
   mood      String?
   wins      String?
   struggles String?
   intention String?
+  athlete   Athlete  @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+
   createdAt DateTime @default(now())
-  updatedAt DateTime
-  athletes  athletes @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+  updatedAt DateTime @updatedAt
+
+  @@map("weekly_reflections")
 }
 
-enum AttendanceSource {
-  BACKBLAST
-  SELF
+model SelfReportEntry {
+  id          String            @id @default(cuid())
+  athleteId   String
+  date        DateTime          @default(now())
+  category    SelfReportCategory
+  note        String?
+  athlete     Athlete            @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("self_report_entries")
 }
 
 enum SelfReportCategory {
@@ -107,3 +166,4 @@ enum SelfReportCategory {
   MENTAL_HEALTH
   SPIRITUAL
 }
+
