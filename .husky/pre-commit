@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+# Block committing dangerous commands
+if git diff --cached | grep -E "db push|accept-data-loss"; then
+  echo "❌ Blocked: Destructive Prisma command found in staged changes."
+  exit 1
+fi
+

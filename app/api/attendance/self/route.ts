@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { getCurrentAthlete } from "@/lib/auth";
+import { getCurrentF3HIM } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 // Force dynamic rendering to prevent build-time execution
@@ -13,8 +13,8 @@ const selfAttendanceSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    const athlete = await getCurrentAthlete();
-    if (!athlete) {
+    const f3him = await getCurrentF3HIM();
+    if (!f3him) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
     // Create attendance record
     await prisma.attendanceRecord.create({
       data: {
-        athleteId: athlete.id,
+        f3HIMId: f3him.id,
         aoId: validated.ao,
         date: date,
         source: "SELF",

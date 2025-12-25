@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { getCurrentAthlete } from "@/lib/auth";
+import { getCurrentF3HIM } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 
 export default async function Dashboard() {
-  const athlete = await getCurrentAthlete();
+  const f3him = await getCurrentF3HIM();
 
-  if (!athlete) {
+  if (!f3him) {
     redirect("/signup");
   }
 
@@ -17,7 +17,7 @@ export default async function Dashboard() {
 
   const attendanceCount = await prisma.attendanceRecord.count({
     where: {
-      athleteId: athlete.id,
+      f3HIMId: f3him.id,
       date: {
         gte: startOfWeek,
       },
@@ -27,7 +27,7 @@ export default async function Dashboard() {
   // Get recent effort entries (last 5)
   const recentEfforts = await prisma.effortRecord.findMany({
     where: {
-      athleteId: athlete.id,
+      f3HIMId: f3him.id,
     },
     orderBy: {
       date: "desc",
@@ -35,10 +35,10 @@ export default async function Dashboard() {
     take: 5,
   });
 
-  // Get latest weekly reflection
+  // Get latest weekly reflection (deprecated, kept for data)
   const latestReflection = await prisma.weeklyReflection.findFirst({
     where: {
-      athleteId: athlete.id,
+      f3HIMId: f3him.id,
     },
     orderBy: {
       date: "desc",

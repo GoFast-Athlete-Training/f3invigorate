@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import { getAdminAuth } from "./firebaseAdmin";
 import { prisma } from "./prisma";
 
-export async function getCurrentAthlete() {
+export async function getCurrentF3HIM() {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get("firebaseToken")?.value;
@@ -40,17 +40,22 @@ export async function getCurrentAthlete() {
     const decodedToken = await adminAuth.verifyIdToken(token);
     const firebaseUid = decodedToken.uid;
 
-    // Look up Athlete by firebaseId
-    const athlete = await prisma.athlete.findUnique({
+    // Look up F3HIM by firebaseId
+    const f3him = await prisma.f3HIM.findUnique({
       where: {
         firebaseId: firebaseUid,
       },
     });
 
-    return athlete;
+    return f3him;
   } catch (error) {
-    console.error("Error getting current athlete:", error);
+    console.error("Error getting current F3HIM:", error);
     return null;
   }
+}
+
+// Legacy alias for backward compatibility during migration
+export async function getCurrentAthlete() {
+  return getCurrentF3HIM();
 }
 

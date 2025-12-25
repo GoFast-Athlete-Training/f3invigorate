@@ -7,100 +7,41 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Reference to existing Athlete model in GoFast database
-// Matches the structure from gofastapp-mvp exactly
-model Athlete {
+// F3HIM - F3 Invigorate Identity Model
+// Represents a member of F3 (Fitness, Fellowship, Faith)
+model F3HIM {
   id String @id @default(cuid())
 
   // Auth
-  firebaseId String  @unique
+  firebaseId String @unique
   email      String?
 
-  // Company Link (Single-tenant)
-  companyId String
-  company   GoFastCompany @relation(fields: [companyId], references: [id])
+  // Identity
+  firstName String?
+  lastName  String?
+  f3Handle  String? @unique
+  photoURL  String?
 
-  // Universal profile
-  firstName    String?
-  lastName     String?
-  gofastHandle String?   @unique
-  photoURL     String?
-  phoneNumber  String?
-  birthday     DateTime?
-  gender       String?
-  city         String?
-  state        String?
-  primarySport String?
-  bio          String?
-  instagram    String?
-
-  // Training profile (future)
-  myCurrentPace       String?
-  myWeeklyMileage     Int?
-  myTrainingGoal      String?
-  myTrainingStartDate DateTime?
-  myTargetRace        String?
-  preferredDistance   String?
-  myPaceRange         String?
-  timePreference      String?
-  myRunningGoals      String?
-
-  // Garmin PKCE Integration
-  garmin_user_id          String?   @unique
-  garmin_access_token     String?
-  garmin_refresh_token    String?
-  garmin_expires_in       Int?
-  garmin_scope            String?
-  garmin_connected_at     DateTime?
-  garmin_last_sync_at     DateTime?
-  garmin_is_connected     Boolean   @default(false)
-  garmin_disconnected_at  DateTime?
-  garmin_permissions      Json?
-  garmin_user_profile     Json?
-  garmin_user_sleep       Json?
-  garmin_user_preferences Json?
-
-  // Strava (future)
-  strava_id            Int?    @unique
-  strava_access_token  String?
-  strava_refresh_token String?
-  strava_expires_at    Int?
-
-  // System fields
+  // System
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // Relations for F3 Invigorate
+  // Relations
   attendanceRecords AttendanceRecord[]
   effortRecords     EffortRecord[]
-  weeklyReflections WeeklyReflection[]
-  selfReportEntries SelfReportEntry[]
+  weeklyReflections WeeklyReflection[] // deprecated UX, keep table
+  selfReportEntries SelfReportEntry[]   // deprecated UX, keep table
 
-  @@map("athletes")
-}
-
-model GoFastCompany {
-  id        String   @id @default(cuid())
-  name      String
-  slug      String   @unique
-  address   String?
-  city      String?
-  state     String?
-  zip       String?
-  domain    String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  athletes Athlete[]
+  @@map("f3_hims")
 }
 
 model AttendanceRecord {
-  id        String   @id @default(cuid())
-  athleteId String
-  aoId      String
-  date      DateTime
-  source    AttendanceSource
-  athlete   Athlete  @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+  id      String   @id @default(cuid())
+  f3HIMId String
+  aoId    String
+  date    DateTime
+  source  AttendanceSource
+  f3HIM   F3HIM @relation(fields: [f3HIMId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -115,12 +56,12 @@ enum AttendanceSource {
 
 model EffortRecord {
   id          String   @id @default(cuid())
-  athleteId   String
+  f3HIMId     String
   date        DateTime
-  calories    Int
-  durationSec Int
-  calPerMin   Float
-  athlete     Athlete  @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+  calories    Int?
+  durationSec Int?
+  calPerMin   Float?
+  f3HIM       F3HIM @relation(fields: [f3HIMId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -130,13 +71,13 @@ model EffortRecord {
 
 model WeeklyReflection {
   id        String   @id @default(cuid())
-  athleteId String
+  f3HIMId   String
   date      DateTime @default(now())
   mood      String?
   wins      String?
   struggles String?
   intention String?
-  athlete   Athlete  @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+  f3HIM     F3HIM @relation(fields: [f3HIMId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -146,11 +87,11 @@ model WeeklyReflection {
 
 model SelfReportEntry {
   id          String            @id @default(cuid())
-  athleteId   String
+  f3HIMId     String
   date        DateTime          @default(now())
   category    SelfReportCategory
   note        String?
-  athlete     Athlete            @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+  f3HIM       F3HIM @relation(fields: [f3HIMId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

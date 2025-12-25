@@ -39,23 +39,23 @@ export default function SignupPage() {
       // Store Firebase token for API calls (Axios interceptor will use it)
       localStorage.setItem('firebaseToken', firebaseToken);
 
-      // Call backend create athlete - empty body, token auto-injected
-      console.log('🌐 SIGNUP: Calling backend API: /athlete/create');
-      const res = await api.post('/athlete/create', {});
+      // Call backend create F3HIM - empty body, token auto-injected
+      console.log('🌐 SIGNUP: Calling backend API: /f3him/create');
+      const res = await api.post('/f3him/create', {});
       
       console.log('✅ SIGNUP: Backend API response:', res.data);
       
-      const athlete = res.data;
+      const f3him = res.data;
 
       // CRITICAL: Validate backend response
-      if (!athlete || !athlete.success) {
-        throw new Error(`Backend API failed: ${athlete?.message || 'Invalid response'}`);
+      if (!f3him || !f3him.success) {
+        throw new Error(`Backend API failed: ${f3him?.message || 'Invalid response'}`);
       }
 
       // Store auth data
       localStorage.setItem('firebaseId', result.user.uid);
-      localStorage.setItem('athleteId', athlete.athleteId);
-      localStorage.setItem('email', athlete.data?.email || result.user.email || '');
+      localStorage.setItem('f3himId', f3him.f3himId);
+      localStorage.setItem('email', f3him.data?.email || result.user.email || '');
 
       // Route to dashboard
       console.log('✅ SIGNUP: Success → Dashboard');
@@ -112,23 +112,23 @@ export default function SignupPage() {
       // Store Firebase token for API calls
       localStorage.setItem('firebaseToken', firebaseToken);
 
-      // Call backend create athlete - empty body, token auto-injected
-      console.log('🌐 SIGNUP: Calling backend API: /athlete/create');
-      const res = await api.post('/athlete/create', { email: emailData.email });
+      // Call backend create F3HIM - empty body, token auto-injected
+      console.log('🌐 SIGNUP: Calling backend API: /f3him/create');
+      const res = await api.post('/f3him/create', { email: emailData.email });
       
       console.log('✅ SIGNUP: Backend API response:', res.data);
       
-      const athlete = res.data;
+      const f3him = res.data;
 
       // CRITICAL: Validate backend response
-      if (!athlete || !athlete.success) {
-        throw new Error(`Backend API failed: ${athlete?.message || 'Invalid response'}`);
+      if (!f3him || !f3him.success) {
+        throw new Error(`Backend API failed: ${f3him?.message || 'Invalid response'}`);
       }
 
       // Store auth data
       localStorage.setItem('firebaseId', user.uid);
-      localStorage.setItem('athleteId', athlete.athleteId);
-      localStorage.setItem('email', athlete.data?.email || user.email || '');
+      localStorage.setItem('f3himId', f3him.f3himId);
+      localStorage.setItem('email', f3him.data?.email || user.email || '');
 
       // Route to dashboard
       console.log('✅ SIGNUP: Success → Dashboard');
@@ -172,23 +172,23 @@ export default function SignupPage() {
       // Store Firebase token for API calls
       localStorage.setItem('firebaseToken', firebaseToken);
 
-      // Call backend create athlete - empty body, token auto-injected
-      console.log('🌐 SIGNIN: Calling backend API: /athlete/create');
-      const res = await api.post('/athlete/create', {});
+      // Call backend create F3HIM - empty body, token auto-injected
+      console.log('🌐 SIGNIN: Calling backend API: /f3him/create');
+      const res = await api.post('/f3him/create', {});
       
       console.log('✅ SIGNIN: Backend API response:', res.data);
       
-      const athlete = res.data;
+      const f3him = res.data;
 
       // CRITICAL: Validate backend response
-      if (!athlete || !athlete.success) {
-        throw new Error(`Backend API failed: ${athlete?.message || 'Invalid response'}`);
+      if (!f3him || !f3him.success) {
+        throw new Error(`Backend API failed: ${f3him?.message || 'Invalid response'}`);
       }
 
       // Store auth data
       localStorage.setItem('firebaseId', user.uid);
-      localStorage.setItem('athleteId', athlete.athleteId);
-      localStorage.setItem('email', athlete.data?.email || user.email || '');
+      localStorage.setItem('f3himId', f3him.f3himId);
+      localStorage.setItem('email', f3him.data?.email || user.email || '');
 
       // Route to dashboard
       console.log('✅ SIGNIN: Success → Dashboard');
