@@ -113,7 +113,7 @@ function LoginForm() {
         <p className="mt-4 text-center text-sm text-gray-500">
           <a href="/" className="hover:underline">Invigorate</a>
           {" · "}
-          <a href="/volunteer" className="hover:underline">Volunteer Match</a>
+          <a href="/f3serve" className="hover:underline">f3serve</a>
         </p>
       </div>
     </div>

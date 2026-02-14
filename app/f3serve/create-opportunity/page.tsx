@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 export default async function CreateOpportunityPage() {
   const f3him = await getCurrentF3HIM();
   if (!f3him) {
-    redirect("/login?next=/volunteer/create-opportunity");
+    redirect("/login?next=/f3serve/create-opportunity");
   }
 
   return (
@@ -21,7 +21,7 @@ export default async function CreateOpportunityPage() {
         organizationId, title, description, category, etc.
       </p>
       <Link
-        href="/volunteer/dashboard"
+        href="/f3serve/dashboard"
         className="mt-4 inline-block text-blue-600 hover:underline"
       >
         ← Back to dashboard

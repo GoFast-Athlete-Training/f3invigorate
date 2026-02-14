@@ -147,10 +147,10 @@ export default async function Dashboard() {
             Create Q Backblast
           </Link>
           <Link
-            href="/volunteer"
+            href="/f3serve"
             className="inline-block px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50"
           >
-            F3 Volunteer Match →
+            f3serve →
           </Link>
         </div>
       </div>

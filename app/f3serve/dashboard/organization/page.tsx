@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 export default async function OrganizationDashboardPage() {
   const f3him = await getCurrentF3HIM();
   if (!f3him) {
-    redirect("/login?next=/volunteer/dashboard/organization");
+    redirect("/login?next=/f3serve/dashboard/organization");
   }
 
   return (
@@ -21,7 +21,7 @@ export default async function OrganizationDashboardPage() {
         via POST /api/opportunities. A full UI for this can be added later.
       </p>
       <Link
-        href="/volunteer/dashboard"
+        href="/f3serve/dashboard"
         className="mt-4 inline-block text-blue-600 hover:underline"
       >
         ← Back to dashboard

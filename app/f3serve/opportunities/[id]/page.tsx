@@ -18,7 +18,7 @@ export default async function OpportunityDetailPage({ params }: Props) {
     return (
       <div>
         <p className="text-gray-600">Opportunity not found.</p>
-        <Link href="/volunteer/opportunities" className="text-blue-600 mt-2 inline-block">
+        <Link href="/f3serve/opportunities" className="text-blue-600 mt-2 inline-block">
           ← Back to opportunities
         </Link>
       </div>
@@ -28,7 +28,7 @@ export default async function OpportunityDetailPage({ params }: Props) {
   return (
     <div>
       <Link
-        href="/volunteer/opportunities"
+        href="/f3serve/opportunities"
         className="text-sm text-blue-600 hover:underline mb-4 inline-block"
       >
         ← Back to opportunities
@@ -55,19 +55,19 @@ export default async function OpportunityDetailPage({ params }: Props) {
         {opportunity.location && (
           <p className="mt-2 text-sm text-gray-600">Location: {opportunity.location}</p>
         )}
-        {f3him && (
-          <div className="mt-6">
+        <div className="mt-6 border-t border-gray-100 pt-4">
+          {f3him ? (
             <ApplyButton opportunityId={opportunity.id} />
-          </div>
-        )}
-        {!f3him && (
-          <p className="mt-6 text-sm text-gray-500">
-            <Link href="/login?next=/volunteer" className="text-blue-600 hover:underline">
-              Sign in
-            </Link>{" "}
-            to apply.
-          </p>
-        )}
+          ) : (
+            <p className="text-sm text-gray-500">
+              Want to volunteer for this?{" "}
+              <Link href="/login?next=/f3serve" className="text-blue-600 hover:underline">
+                Sign in when you’re ready
+              </Link>
+              .
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );

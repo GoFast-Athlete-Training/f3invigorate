@@ -5,10 +5,10 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-export default async function VolunteerDashboardPage() {
+export default async function F3ServeDashboardPage() {
   const f3him = await getCurrentF3HIM();
   if (!f3him) {
-    redirect("/login?next=/volunteer/dashboard");
+    redirect("/login?next=/f3serve/dashboard");
   }
 
   const applications = await prisma.volunteerApplication.findMany({
@@ -21,7 +21,7 @@ export default async function VolunteerDashboardPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900">Volunteer Dashboard</h1>
+      <h1 className="text-2xl font-bold text-gray-900">f3serve Dashboard</h1>
       <p className="mt-2 text-gray-600">Your applications and volunteer activity.</p>
 
       <section className="mt-6">
@@ -29,7 +29,7 @@ export default async function VolunteerDashboardPage() {
         {applications.length === 0 ? (
           <div className="mt-2 bg-white rounded-xl border border-gray-200 p-6 text-center text-gray-500">
             You haven&apos;t applied to any opportunities yet.{" "}
-            <Link href="/volunteer/opportunities" className="text-blue-600 hover:underline">
+            <Link href="/f3serve/opportunities" className="text-blue-600 hover:underline">
               Browse opportunities
             </Link>
           </div>
@@ -42,7 +42,7 @@ export default async function VolunteerDashboardPage() {
               >
                 <div>
                   <Link
-                    href={`/volunteer/opportunities/${app.opportunityId}`}
+                    href={`/f3serve/opportunities/${app.opportunityId}`}
                     className="font-medium text-gray-900 hover:underline"
                   >
                     {app.opportunity.title}
@@ -70,13 +70,13 @@ export default async function VolunteerDashboardPage() {
 
       <div className="mt-6 flex gap-3">
         <Link
-          href="/volunteer/opportunities"
+          href="/f3serve/opportunities"
           className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
         >
           Browse opportunities
         </Link>
         <Link
-          href="/volunteer/profile"
+          href="/f3serve/profile"
           className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
         >
           Edit profile

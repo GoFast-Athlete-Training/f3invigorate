@@ -5,10 +5,10 @@ import VolunteerProfileForm from "./VolunteerProfileForm";
 
 export const dynamic = "force-dynamic";
 
-export default async function VolunteerProfilePage() {
+export default async function F3ServeProfilePage() {
   const f3him = await getCurrentF3HIM();
   if (!f3him) {
-    redirect("/login?next=/volunteer/profile");
+    redirect("/login?next=/f3serve/profile");
   }
 
   const profile = await prisma.volunteerProfile.findUnique({

@@ -1,12 +1,18 @@
 import Link from "next/link";
 import type { DisplayOpportunity } from "@/lib/volunteer-fake-data";
 
+const BASE = "/f3serve";
+
 function formatCategory(s: string) {
   return s.replace(/_/g, " ").toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 export default function OpportunityCard({ opp }: { opp: DisplayOpportunity }) {
-  const href = opp.id ? `/volunteer/opportunities/${opp.id}` : null;
+  const href = opp.id
+    ? `${BASE}/opportunities/${opp.id}`
+    : opp.slug
+      ? `${BASE}/opportunities/outlook/${opp.slug}`
+      : null;
 
   const content = (
     <>
@@ -28,14 +34,8 @@ export default function OpportunityCard({ opp }: { opp: DisplayOpportunity }) {
           </span>
         )}
       </div>
-      {href ? (
+      {href && (
         <p className="mt-3 text-sm font-medium text-blue-600">View details →</p>
-      ) : (
-        <p className="mt-3 text-sm text-gray-500">
-          <Link href="/login?next=/volunteer" className="text-blue-600 hover:underline">
-            Sign in to apply
-          </Link>
-        </p>
       )}
     </>
   );

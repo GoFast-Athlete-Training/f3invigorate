@@ -4,7 +4,8 @@
  */
 
 export type DisplayOpportunity = {
-  id: string | null; // null = fake, no detail page
+  id: string | null; // null = fake; detail via outlook slug
+  slug?: string | null; // for fake: /f3serve/opportunities/outlook/[slug]
   title: string;
   description: string;
   organizationName: string;
@@ -17,6 +18,7 @@ export type DisplayOpportunity = {
 export const FAKE_OPPORTUNITIES: DisplayOpportunity[] = [
   {
     id: null,
+    slug: "weekend-trail-cleanup",
     title: "Weekend Trail Cleanup",
     description:
       "Join F3 brothers for a Saturday morning trail cleanup at a local park. Gloves and bags provided. Great way to give back and get some fresh air.",
@@ -28,6 +30,7 @@ export const FAKE_OPPORTUNITIES: DisplayOpportunity[] = [
   },
   {
     id: null,
+    slug: "mentor-new-pax",
     title: "Mentor a New PAX",
     description:
       "Help new F3 members get oriented: show them the ropes at workouts, answer questions, and be a friendly point of contact for their first 30 days.",
@@ -38,6 +41,7 @@ export const FAKE_OPPORTUNITIES: DisplayOpportunity[] = [
   },
   {
     id: null,
+    slug: "backblast-social-media",
     title: "Backblast & Social Media",
     description:
       "Write backblasts after workouts and help manage our region's social media. Flexible, async-friendly. No experience required.",
@@ -48,6 +52,7 @@ export const FAKE_OPPORTUNITIES: DisplayOpportunity[] = [
   },
   {
     id: null,
+    slug: "him-dinner-setup",
     title: "HIM Dinner Setup & Teardown",
     description:
       "One-time help setting up and breaking down our quarterly HIM dinner. Arrive early, stay a bit after—food and fellowship included.",
@@ -59,6 +64,7 @@ export const FAKE_OPPORTUNITIES: DisplayOpportunity[] = [
   },
   {
     id: null,
+    slug: "regional-leadership-board",
     title: "Regional Leadership Board",
     description:
       "Serve on the regional board: help set strategy, approve new AOs, and support site Qs. Monthly meetings plus occasional async decisions.",
@@ -69,6 +75,7 @@ export const FAKE_OPPORTUNITIES: DisplayOpportunity[] = [
   },
   {
     id: null,
+    slug: "website-signup-tools",
     title: "Website & Signup Tools",
     description:
       "Light technical help: update the regional website, tweak signup forms, or integrate with our communication tools. Project-based, remote.",
