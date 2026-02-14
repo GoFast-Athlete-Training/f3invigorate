@@ -1,50 +1,67 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import { FAKE_OPPORTUNITIES, type DisplayOpportunity } from "@/lib/volunteer-fake-data";
+import OpportunityCard from "../OpportunityCard";
 
 export const dynamic = "force-dynamic";
 
+function toDisplay(opp: {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  commitmentType: string;
+  isRemote: boolean;
+  location: string | null;
+  organization: { name: string };
+}): DisplayOpportunity {
+  return {
+    id: opp.id,
+    title: opp.title,
+    description: opp.description,
+    organizationName: opp.organization.name,
+    category: opp.category,
+    commitmentType: opp.commitmentType,
+    isRemote: opp.isRemote,
+    location: opp.location,
+  };
+}
+
 export default async function VolunteerOpportunitiesPage() {
-  const opportunities = await prisma.volunteerOpportunity.findMany({
+  const real = await prisma.volunteerOpportunity.findMany({
     where: { status: "OPEN" },
     include: { organization: { select: { name: true } } },
     orderBy: { createdAt: "desc" },
   });
 
+  const displayList: DisplayOpportunity[] =
+    real.length > 0 ? real.map(toDisplay) : FAKE_OPPORTUNITIES;
+
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900">Opportunities</h1>
-      <p className="mt-2 text-gray-600">Browse and apply to volunteer opportunities.</p>
-      <div className="mt-6 space-y-4">
-        {opportunities.length === 0 ? (
-          <div className="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-500">
-            No open opportunities yet.
+      <div className="flex items-center justify-between gap-4 mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">All opportunities</h1>
+          <p className="mt-1 text-gray-600">
+            Browse and apply to volunteer opportunities. Sign in to apply.
+          </p>
+        </div>
+        <Link
+          href="/volunteer"
+          className="text-sm text-blue-600 hover:underline shrink-0"
+        >
+          ← Home
+        </Link>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {displayList.length === 0 ? (
+          <div className="sm:col-span-2 lg:col-span-3 bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-500">
+            No open opportunities yet. Check back later or sign in to create one.
           </div>
         ) : (
-          opportunities.map((opp) => (
-            <Link
-              key={opp.id}
-              href={`/volunteer/opportunities/${opp.id}`}
-              className="block bg-white rounded-xl border border-gray-200 p-4 hover:border-blue-300 hover:shadow-sm transition"
-            >
-              <div className="flex flex-wrap items-baseline justify-between gap-2">
-                <h2 className="font-semibold text-gray-900">{opp.title}</h2>
-                <span className="text-sm text-gray-500">{opp.organization.name}</span>
-              </div>
-              <p className="mt-1 text-sm text-gray-600 line-clamp-2">{opp.description}</p>
-              <div className="mt-2 flex flex-wrap gap-2">
-                <span className="inline-flex items-center rounded-md bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-700">
-                  {opp.category}
-                </span>
-                <span className="inline-flex items-center rounded-md bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-700">
-                  {opp.commitmentType}
-                </span>
-                {opp.isRemote && (
-                  <span className="inline-flex items-center rounded-md bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">
-                    Remote
-                  </span>
-                )}
-              </div>
-            </Link>
+          displayList.map((opp, i) => (
+            <OpportunityCard key={opp.id ?? `fake-${i}`} opp={opp} />
           ))
         )}
       </div>
