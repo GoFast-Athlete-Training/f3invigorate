@@ -27,10 +27,12 @@ model F3HIM {
   updatedAt DateTime @updatedAt
 
   // Relations
-  attendanceRecords AttendanceRecord[]
-  effortRecords     EffortRecord[]
-  weeklyReflections WeeklyReflection[] // deprecated UX, keep table
-  selfReportEntries SelfReportEntry[]   // deprecated UX, keep table
+  attendanceRecords   AttendanceRecord[]
+  effortRecords       EffortRecord[]
+  weeklyReflections   WeeklyReflection[] // deprecated UX, keep table
+  selfReportEntries   SelfReportEntry[]   // deprecated UX, keep table
+  volunteerProfile    VolunteerProfile?
+  volunteerApplications VolunteerApplication[]
 
   @@map("f3_hims")
 }
@@ -106,5 +108,98 @@ enum SelfReportCategory {
   DIET_QUEEN
   MENTAL_HEALTH
   SPIRITUAL
+}
+
+// ---------------------------------------------------------------------------
+// Volunteer Match (same app, different URL front door)
+// ---------------------------------------------------------------------------
+
+enum CommitmentType {
+  ONE_TIME
+  RECURRING
+  PROJECT_BASED
+  ASYNC
+}
+
+enum OpportunityCategory {
+  MENTORSHIP
+  LABOR
+  EVENTS
+  ADMIN
+  BOARD
+  TECHNICAL
+}
+
+enum ApplicationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum OpportunityStatus {
+  OPEN
+  CLOSED
+}
+
+model VolunteerProfile {
+  f3himId             String   @id
+  f3him               F3HIM    @relation(fields: [f3himId], references: [id], onDelete: Cascade)
+  skills              String[] @default([])
+  interests           String[] @default([])
+  availability        String   @db.Text @default("")
+  commitmentPreference CommitmentType @default(ONE_TIME)
+  remotePreference    Boolean  @default(false)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  @@map("volunteer_profiles")
+}
+
+model Organization {
+  id           String  @id @default(cuid())
+  name         String
+  description  String  @db.Text
+  contactEmail String
+  website      String?
+  location     String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  opportunities VolunteerOpportunity[]
+  @@map("organizations")
+}
+
+model VolunteerOpportunity {
+  id              String            @id @default(cuid())
+  organizationId  String
+  organization    Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  title           String
+  description     String            @db.Text
+  category        OpportunityCategory
+  location        String?
+  commitmentType  CommitmentType
+  estimatedHours  Int?
+  startDate       DateTime?
+  endDate         DateTime?
+  isRemote        Boolean           @default(false)
+  requiredSkills  String[]
+  volunteersNeeded Int             @default(1)
+  status          OpportunityStatus @default(OPEN)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  applications    VolunteerApplication[]
+  @@map("volunteer_opportunities")
+}
+
+model VolunteerApplication {
+  id           String              @id @default(cuid())
+  volunteerId  String
+  volunteer    F3HIM               @relation(fields: [volunteerId], references: [id], onDelete: Cascade)
+  opportunityId String
+  opportunity  VolunteerOpportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  status       ApplicationStatus   @default(PENDING)
+  message      String?             @db.Text
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  @@unique([volunteerId, opportunityId])
+  @@map("volunteer_applications")
 }
 

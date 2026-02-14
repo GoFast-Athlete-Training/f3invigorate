@@ -61,14 +61,14 @@ All records are tied to `Athlete.id` via foreign keys.
 
 1. **Splash Screen** (`/`) - Shows "f3" branding, checks auth state
 2. **Signup/Signin** (`/signup`) - Firebase authentication (Google or Email)
-3. **Athlete Creation** - After auth, calls `/api/athlete/create` to create/find athlete in database
+3. **F3HIM creation** - After auth, calls `/api/f3him/create` to create/find identity in database
 4. **Dashboard** (`/dashboard`) - Main dashboard showing attendance, effort, reflections
 
 ### **API Routes**
 
 All API routes use Firebase token authentication via `Authorization: Bearer <token>` header:
 
-- `POST /api/athlete/create` - Create or find athlete after Firebase auth
+- `POST /api/f3him/create` - Create or find F3HIM after Firebase auth
 - `POST /api/backblast/create` - Create backblast and log attendance for multiple PAX
 - `POST /api/attendance/self` - Log self-attendance
 - `POST /api/effort/manual` - Log manual effort entry

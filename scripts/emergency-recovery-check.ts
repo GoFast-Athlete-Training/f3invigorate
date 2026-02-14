@@ -29,31 +29,27 @@ async function checkRecoveryOptions() {
       console.log('❌ No backup tables found');
     }
 
-    // 2. Check current athlete count
+    // 2. Check current F3HIM count
     console.log('\n2️⃣ Current database state:');
-    const athleteCount = await prisma.athlete.count();
-    console.log(`   Athletes: ${athleteCount}`);
+    const f3himCount = await prisma.f3HIM.count();
+    console.log(`   F3HIMs: ${f3himCount}`);
     
-    if (athleteCount === 0) {
-      console.log('   ⚠️  DATABASE IS EMPTY - DATA LOSS CONFIRMED');
+    if (f3himCount === 0) {
+      console.log('   ⚠️  No identity records - DB may be empty or fresh');
     }
 
-    // 3. Check for other athlete-related tables
+    // 3. Check for related tables
     console.log('\n3️⃣ Checking for related data...');
     const relatedTables = await prisma.$queryRaw<Array<{ table_name: string }>>`
       SELECT table_name 
       FROM information_schema.tables 
       WHERE table_schema = 'public' 
-      AND (table_name LIKE '%athlete%' OR table_name LIKE '%activity%')
+      AND (table_name LIKE '%f3%' OR table_name LIKE '%attendance%' OR table_name LIKE '%volunteer%')
       ORDER BY table_name;
     `;
     
     console.log(`   Found ${relatedTables.length} related table(s):`);
-    relatedTables.forEach(t => {
-      if (t.table_name !== 'athletes') {
-        console.log(`   - ${t.table_name}`);
-      }
-    });
+    relatedTables.forEach(t => console.log(`   - ${t.table_name}`));
 
     // 4. Check database connection info
     console.log('\n4️⃣ Database connection:');
@@ -74,10 +70,10 @@ async function checkRecoveryOptions() {
     console.log('\n⚠️  IMPORTANT:');
     console.log('   - DO NOT run any more schema changes');
     console.log('   - Firebase Auth accounts are SAFE');
-    console.log('   - Users can re-signup to recreate athlete records');
+    console.log('   - Users can re-signup to recreate F3HIM records');
 
-  } catch (error: any) {
-    console.error('❌ Error:', error.message);
+  } catch (error: unknown) {
+    console.error('❌ Error:', error instanceof Error ? error.message : error);
   } finally {
     await prisma.$disconnect();
   }

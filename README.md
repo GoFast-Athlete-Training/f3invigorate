@@ -1,6 +1,11 @@
-# F3 Invigorate Next.js MVP
+# F3 Invigorate + Volunteer Match (combined)
 
-A Next.js 15 App Router application for F3 Invigorate - tracking attendance, effort, and reflections for F3 workout groups.
+Next.js 15 App Router app with **two front doors**:
+
+- **F3 Invigorate** (grow.f3capitalimpact.org) – Attendance, effort, reflections, backblast.
+- **F3 Volunteer Match** (f3capitalimpact.org) – Volunteer opportunities, apply, my applications, profile.
+
+One codebase, one DB, one auth (F3HIM). See `docs/ARCHITECTURE_PROCONS.md` and `docs/MIGRATION_FROM_VOLUNTEERMATCH.md`.
 
 ## Features
 
@@ -11,6 +16,7 @@ A Next.js 15 App Router application for F3 Invigorate - tracking attendance, eff
 - **Manual Effort Entry**: Log workout effort (calories, duration) manually
 - **Weekly Reflection**: Track mood, wins, struggles, and intentions
 - **Self-Report Entry**: Log entries across different categories (Fellowship, Service, Marriage & Family, etc.)
+- **F3 Volunteer Match** (under `/volunteer`): Browse opportunities, apply, volunteer profile, my applications, organization/opportunity management APIs
 
 ## Tech Stack
 
@@ -46,6 +52,10 @@ NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
 FIREBASE_PROJECT_ID=your_project_id
 FIREBASE_CLIENT_EMAIL=your_service_account_email
 FIREBASE_PRIVATE_KEY=your_private_key
+
+# Host-based routing (production; optional, defaults below)
+VOLUNTEER_HOST=f3capitalimpact.org
+INVIGORATE_HOST=grow.f3capitalimpact.org
 ```
 
 3. Generate Prisma client:
@@ -65,21 +75,20 @@ npm run dev
 
 ## Database Schema
 
-This app connects to the existing GoFast database and uses the `Athlete` table. New tables are added:
+This app uses the combined schema. Identity is **F3HIM** (F3 Invigorate Identity Model). Tables include:
 
-- `attendance_records` - Tracks attendance (from backblast or self-report)
-- `effort_records` - Tracks workout effort (calories, duration)
-- `weekly_reflections` - Weekly reflection entries
-- `self_report_entries` - Self-report entries across different categories
+- `f3_hims` - Identity (auth, name, F3 handle)
+- `attendance_records`, `effort_records`, `weekly_reflections`, `self_report_entries` - Invigorate
+- `organizations`, `volunteer_opportunities`, `volunteer_applications`, `volunteer_profiles` - Volunteer Match
 
-All records are tied to `Athlete.id` via foreign keys.
+All records are tied to `F3HIM.id` via foreign keys.
 
 ## Authentication
 
 Uses Firebase Auth with pattern similar to gofastapp-mvp:
 - **Splash Screen** (`/`) - Shows "f3" branding, checks auth state, routes to signup or dashboard
 - **Signup/Signin** (`/signup`) - Firebase authentication (Google or Email)
-- **Athlete Creation** - After auth, calls `/api/athlete/create` to create/find athlete in database
+- **F3HIM creation** - After auth, calls `/api/f3him/create` to create/find identity in database
 - **Dashboard** (`/dashboard`) - Main dashboard (requires authentication)
 - Client-side login via `lib/firebase.ts` (re-exports from `firebaseClient.ts`)
 - Server-side token verification via `lib/firebaseAdmin.ts`
@@ -91,7 +100,7 @@ Uses Firebase Auth with pattern similar to gofastapp-mvp:
 ```
 /app
   /api
-    /athlete/create/route.ts (create/find athlete after Firebase auth)
+    /f3him/create/route.ts (create/find F3HIM after Firebase auth)
     /attendance/self/route.ts
     /backblast/create/route.ts
     /effort/manual/route.ts

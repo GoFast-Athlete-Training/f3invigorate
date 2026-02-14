@@ -1,32 +1,38 @@
-import { initializeApp, getApps, getApp } from "firebase/app";
-import { getAuth, setPersistence, browserLocalPersistence } from "firebase/auth";
+import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
+import { getAuth, setPersistence, browserLocalPersistence, Auth } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN!,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID!,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET!,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID!,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID!,
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY ?? "",
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN ?? "",
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ?? "",
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET ?? "",
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID ?? "",
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID ?? "",
 };
 
-export const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+let app: FirebaseApp;
+let auth: Auth;
 
-export const auth = getAuth(app);
-
-// Set persistence to keep user logged in across page refreshes
-// This is critical for preventing logout on refresh
-// Only set persistence in browser, and only if auth is available
-if (typeof window !== "undefined") {
-  try {
-    setPersistence(auth, browserLocalPersistence).catch((error) => {
-      // Silently fail during build - will work at runtime
-      if (process.env.NODE_ENV !== "production" || typeof window !== "undefined") {
-        console.error("Failed to set auth persistence:", error);
-      }
-    });
-  } catch (error) {
-    // Ignore errors during build
+try {
+  const hasConfig = typeof firebaseConfig.apiKey === "string" && firebaseConfig.apiKey.length > 0;
+  if (hasConfig && !getApps().length) {
+    app = initializeApp(firebaseConfig);
+    auth = getAuth(app);
+    if (typeof window !== "undefined") {
+      setPersistence(auth, browserLocalPersistence).catch(() => {});
+    }
+  } else if (getApps().length) {
+    app = getApp();
+    auth = getAuth(app);
+  } else {
+    app = {} as FirebaseApp;
+    auth = {} as Auth;
   }
+} catch {
+  // Build-time or missing env: avoid auth/invalid-api-key so static generation can complete
+  app = {} as FirebaseApp;
+  auth = {} as Auth;
 }
+
+export { app, auth };
 

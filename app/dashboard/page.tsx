@@ -3,6 +3,8 @@ import { getCurrentF3HIM } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+
 export default async function Dashboard() {
   const f3him = await getCurrentF3HIM();
 
@@ -104,7 +106,7 @@ export default async function Dashboard() {
                         {new Date(effort.date).toLocaleDateString()}
                       </span>
                       <span className="text-gray-600">
-                        {effort.calories} cal / {Math.round(effort.durationSec / 60)} min
+                        {effort.calories} cal / {effort.durationSec != null ? Math.round(effort.durationSec / 60) : "—"} min
                       </span>
                     </div>
                   </li>
@@ -137,12 +139,18 @@ export default async function Dashboard() {
           </div>
         </div>
 
-        <div className="mt-8">
+        <div className="mt-8 flex flex-wrap gap-3">
           <Link
             href="/backblast/create"
             className="inline-block px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800"
           >
             Create Q Backblast
+          </Link>
+          <Link
+            href="/volunteer"
+            className="inline-block px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50"
+          >
+            F3 Volunteer Match →
           </Link>
         </div>
       </div>

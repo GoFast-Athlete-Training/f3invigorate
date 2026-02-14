@@ -3,10 +3,14 @@
 import { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebaseClient";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import api from "@/lib/api";
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const next = searchParams.get("next") || "/";
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
@@ -27,16 +31,18 @@ export default function LoginPage() {
       );
       const token = await userCredential.user.getIdToken();
 
-      // Set token in cookie
       await fetch("/api/auth/set-token", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token }),
       });
 
-      router.push("/");
+      const res = await api.post("/f3him/create", {});
+      if (!res.data?.success) {
+        throw new Error(res.data?.message || "Account setup failed");
+      }
+
+      router.push(next);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to sign in");
     } finally {
@@ -47,7 +53,10 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-8">
       <div className="max-w-md w-full">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8 text-center">F3 Invigorate Login</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-8 text-center">Sign in</h1>
+        <p className="text-center text-gray-600 text-sm mb-4">
+          F3 Invigorate & Volunteer Match
+        </p>
 
         <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow p-6 space-y-6">
           {error && (
@@ -93,7 +102,19 @@ export default function LoginPage() {
           >
             {loading ? "Signing in..." : "Sign In"}
           </button>
+
+          <p className="text-center text-sm text-gray-600">
+            No account?{" "}
+            <a href="/signup" className="text-blue-600 hover:underline">
+              Sign up
+            </a>
+          </p>
         </form>
+        <p className="mt-4 text-center text-sm text-gray-500">
+          <a href="/" className="hover:underline">Invigorate</a>
+          {" · "}
+          <a href="/volunteer" className="hover:underline">Volunteer Match</a>
+        </p>
       </div>
     </div>
   );

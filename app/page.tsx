@@ -80,6 +80,14 @@ export default async function Home() {
           </Link>
         </div>
 
+        {/* Volunteer Match front door */}
+        <Link
+          href="/volunteer"
+          className="block w-full bg-gray-200 text-gray-800 rounded-lg p-4 mb-4 hover:bg-gray-300 transition text-center font-medium"
+        >
+          F3 Volunteer Match →
+        </Link>
+
         {/* Optional: See Points / Impact */}
         <div className="bg-white rounded-lg shadow p-6">
           <h2 className="text-lg font-semibold text-gray-800 mb-4">Your Impact</h2>

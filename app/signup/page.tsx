@@ -36,7 +36,12 @@ export default function SignupPage() {
       const firebaseToken = await result.user.getIdToken();
       console.log('🔐 SIGNUP: Firebase token obtained');
 
-      // Store Firebase token for API calls (Axios interceptor will use it)
+      // Set cookie so server-side getCurrentF3HIM() works
+      await fetch('/api/auth/set-token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: firebaseToken }),
+      });
       localStorage.setItem('firebaseToken', firebaseToken);
 
       // Call backend create F3HIM - empty body, token auto-injected
@@ -109,7 +114,11 @@ export default function SignupPage() {
       const firebaseToken = await user.getIdToken();
       console.log('🔐 SIGNUP: Firebase token obtained');
 
-      // Store Firebase token for API calls
+      await fetch('/api/auth/set-token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: firebaseToken }),
+      });
       localStorage.setItem('firebaseToken', firebaseToken);
 
       // Call backend create F3HIM - empty body, token auto-injected
@@ -169,7 +178,11 @@ export default function SignupPage() {
       const firebaseToken = await user.getIdToken();
       console.log('🔐 SIGNIN: Firebase token obtained');
 
-      // Store Firebase token for API calls
+      await fetch('/api/auth/set-token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: firebaseToken }),
+      });
       localStorage.setItem('firebaseToken', firebaseToken);
 
       // Call backend create F3HIM - empty body, token auto-injected

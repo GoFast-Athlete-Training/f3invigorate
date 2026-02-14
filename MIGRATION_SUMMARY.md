@@ -206,3 +206,4 @@ Reflection, journaling, and life-category tracking are explicitly out of scope f
 ### Legacy (Keep for Migration Period)
 - `app/api/athlete/create/route.ts` - **DEPRECATED** (keep for backward compat)
 
+
