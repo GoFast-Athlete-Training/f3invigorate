@@ -3,23 +3,11 @@ import Link from "next/link";
 export const dynamic = "force-dynamic";
 
 /**
- * Root splash – no auth, no redirect. Two entry points: Invigorate and f3serve.
+ * Root route – no nav. Two entry points: Invigorate and f3serve.
  */
 export default function RootSplash() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-4xl mx-auto px-4 py-6 flex items-center justify-between">
-          <span className="text-xl font-bold text-black">f3</span>
-          <Link
-            href="/login"
-            className="text-sm text-gray-600 hover:text-gray-900"
-          >
-            Sign in
-          </Link>
-        </div>
-      </header>
-
       <main className="flex-1 max-w-4xl mx-auto w-full px-4 py-16 sm:py-24">
         <h1 className="text-4xl sm:text-5xl font-bold text-black mb-2">F3</h1>
         <p className="text-lg text-gray-600 mb-12">
@@ -54,18 +42,6 @@ export default function RootSplash() {
           </Link>
         </div>
       </main>
-
-      <footer className="border-t border-gray-200 py-4">
-        <div className="max-w-4xl mx-auto px-4 text-center text-sm text-gray-500">
-          <Link href="/login" className="hover:text-gray-700">
-            Sign in
-          </Link>
-          {" · "}
-          <Link href="/f3serve" className="hover:text-gray-700">
-            f3serve
-          </Link>
-        </div>
-      </footer>
     </div>
   );
 }

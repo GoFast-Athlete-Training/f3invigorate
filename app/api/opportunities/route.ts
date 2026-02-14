@@ -2,18 +2,34 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { CommitmentType, OpportunityCategory, OpportunityStatus } from "@prisma/client";
+import type { DisplayOpportunity } from "@/lib/volunteer-fake-data";
+import { FAKE_OPPORTUNITIES } from "@/lib/volunteer-fake-data";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const opportunities = await prisma.volunteerOpportunity.findMany({
+    const rows = await prisma.volunteerOpportunity.findMany({
       where: { status: "OPEN" },
       include: { organization: { select: { name: true } } },
       orderBy: { createdAt: "desc" },
       take: 50,
     });
-    return NextResponse.json(opportunities);
+    const opportunities: DisplayOpportunity[] =
+      rows.length > 0
+        ? rows.map((r) => ({
+            id: r.id,
+            slug: null,
+            title: r.title,
+            description: r.description,
+            organizationName: r.organization.name,
+            category: r.category,
+            commitmentType: r.commitmentType,
+            isRemote: r.isRemote,
+            location: r.location ?? null,
+          }))
+        : FAKE_OPPORTUNITIES;
+    return NextResponse.json({ opportunities });
   } catch (error) {
     console.error("List opportunities error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

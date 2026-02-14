@@ -21,7 +21,7 @@ export default async function F3ServeLayout({
             <Link href="/" className="text-sm text-gray-600 hover:text-gray-900">
               Home
             </Link>
-            <Link href="/f3serve/opportunities" className="text-sm text-gray-600 hover:text-gray-900">
+            <Link href="/f3serve" className="text-sm text-gray-600 hover:text-gray-900">
               Opportunities
             </Link>
             {f3him ? (
