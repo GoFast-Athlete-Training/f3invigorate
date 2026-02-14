@@ -3,11 +3,13 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import type { DisplayOpportunity } from "@/lib/volunteer-fake-data";
+import { FAKE_OPPORTUNITIES } from "@/lib/volunteer-fake-data";
 import OpportunityCardsContainer from "../OpportunityCardsContainer";
 
 /**
  * Volunteer opportunities list loaded via fetch (like runcrew container).
  * GET /api/opportunities returns { opportunities }; fake data used when DB is empty.
+ * On API error, fall back to FAKE_OPPORTUNITIES so we always show demo data.
  */
 export default function OpportunitiesOutlook() {
   const [opportunities, setOpportunities] = useState<DisplayOpportunity[]>([]);
@@ -20,12 +22,14 @@ export default function OpportunitiesOutlook() {
         const res = await fetch("/api/opportunities");
         const data = await res.json();
         if (!res.ok) throw new Error(data.error ?? "Failed to load");
-        if (!cancelled && Array.isArray(data.opportunities)) {
-          setOpportunities(data.opportunities);
-        }
+        const list =
+          Array.isArray(data.opportunities) ? data.opportunities
+          : Array.isArray(data) ? data
+          : FAKE_OPPORTUNITIES;
+        if (!cancelled) setOpportunities(list);
       } catch (e) {
         console.error("Fetch opportunities:", e);
-        if (!cancelled) setOpportunities([]);
+        if (!cancelled) setOpportunities(FAKE_OPPORTUNITIES);
       } finally {
         if (!cancelled) setLoading(false);
       }
