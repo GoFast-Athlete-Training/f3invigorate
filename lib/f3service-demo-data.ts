@@ -1,6 +1,4 @@
 export type OrgCategory = "YOUTH" | "VETERANS" | "FAITH" | "COMMUNITY" | "HEALTH";
-export type ActivationStatus = "UPCOMING" | "COMPLETED";
-export type ParticipantStatus = "GOING" | "ATTENDED";
 
 export type Ao = {
   id: string;
@@ -40,25 +38,24 @@ export type OpportunityTemplate = {
   createdAt: string;
 };
 
-export type Activation = {
-  id: string;
+export type F3Project = {
+  f3ProjectId: string;
   opportunityId: string;
   aoId: string;
   title: string;
-  date: string;
-  goalHeadcount: number;
-  goalHours: number;
-  status: ActivationStatus;
+  startTime: string;
+  hoursWorking: number;
+  description: string;
+  isCompleted: boolean;
   createdAt: string;
 };
 
-export type Participant = {
+export type ProjectMembership = {
   id: string;
-  activationId: string;
+  f3ProjectId: string;
   userId: string;
-  status: ParticipantStatus;
   hoursLogged: number;
-  createdAt: string;
+  joinedAt: string;
 };
 
 export const slugify = (value: string) =>
@@ -238,52 +235,67 @@ export const opportunities: OpportunityTemplate[] = [
   },
 ];
 
-export const activations: Activation[] = [
+export const projects: F3Project[] = [
   {
-    id: "act-mid-river",
+    f3ProjectId: "f3proj-clean-up-demo",
+    opportunityId: "opp-river",
+    aoId: "ao-midtown",
+    title: "Clean Up Demo",
+    startTime: daysFromNow(3),
+    hoursWorking: 3,
+    description:
+      "Public demo project page for F3 Capital Impact. Join this neighborhood cleanup effort and bring gloves and water.",
+    isCompleted: false,
+    createdAt: daysAgo(2),
+  },
+  {
+    f3ProjectId: "f3proj-mid-river",
     opportunityId: "opp-river",
     aoId: "ao-midtown",
     title: "Midtown River Push",
-    date: daysFromNow(10),
-    goalHeadcount: 15,
-    goalHours: 60,
-    status: "UPCOMING",
+    startTime: daysFromNow(10),
+    hoursWorking: 4,
+    description: "City river cleanup led by Midtown AO with supplies provided on-site.",
+    isCompleted: false,
     createdAt: daysFromNow(-10),
   },
   {
-    id: "act-south-serves",
+    f3ProjectId: "f3proj-south-serves",
     opportunityId: "opp-veterans",
     aoId: "ao-southside",
     title: "Southside Serves",
-    date: daysFromNow(7),
-    goalHeadcount: 10,
-    goalHours: 40,
-    status: "UPCOMING",
+    startTime: daysFromNow(7),
+    hoursWorking: 4,
+    description: "Warehouse sorting project supporting veteran family food distribution.",
+    isCompleted: false,
     createdAt: daysFromNow(-8),
   },
   {
-    id: "act-mid-mentor",
+    f3ProjectId: "f3proj-mid-mentor",
     opportunityId: "opp-youth",
     aoId: "ao-midtown",
     title: "Mentor Launch Night",
-    date: daysAgo(20),
-    goalHeadcount: 8,
-    goalHours: 32,
-    status: "COMPLETED",
+    startTime: daysAgo(20),
+    hoursWorking: 8,
+    description: "Kickoff mentoring night pairing Midtown HIMs with middle school students.",
+    isCompleted: true,
     createdAt: daysAgo(30),
   },
 ];
 
-export const participants: Participant[] = [
-  { id: "p-1", activationId: "act-mid-river", userId: "u-mid-1", status: "GOING", hoursLogged: 0, createdAt: daysAgo(1) },
-  { id: "p-2", activationId: "act-mid-river", userId: "u-mid-2", status: "GOING", hoursLogged: 0, createdAt: daysAgo(1) },
-  { id: "p-3", activationId: "act-mid-river", userId: "u-mid-3", status: "GOING", hoursLogged: 0, createdAt: daysAgo(1) },
-  { id: "p-4", activationId: "act-south-serves", userId: "u-south-1", status: "GOING", hoursLogged: 0, createdAt: daysAgo(1) },
-  { id: "p-5", activationId: "act-south-serves", userId: "u-south-2", status: "GOING", hoursLogged: 0, createdAt: daysAgo(1) },
-  { id: "p-6", activationId: "act-mid-mentor", userId: "u-mid-1", status: "ATTENDED", hoursLogged: 8, createdAt: daysAgo(20) },
-  { id: "p-7", activationId: "act-mid-mentor", userId: "u-mid-2", status: "ATTENDED", hoursLogged: 8, createdAt: daysAgo(20) },
-  { id: "p-8", activationId: "act-mid-mentor", userId: "u-mid-3", status: "ATTENDED", hoursLogged: 8, createdAt: daysAgo(20) },
-  { id: "p-9", activationId: "act-mid-mentor", userId: "u-mid-4", status: "ATTENDED", hoursLogged: 8, createdAt: daysAgo(20) },
+export const projectMemberships: ProjectMembership[] = [
+  { id: "pm-demo-1", f3ProjectId: "f3proj-clean-up-demo", userId: "u-mid-1", hoursLogged: 0, joinedAt: daysAgo(1) },
+  { id: "pm-demo-2", f3ProjectId: "f3proj-clean-up-demo", userId: "u-mid-2", hoursLogged: 0, joinedAt: daysAgo(1) },
+  { id: "pm-demo-3", f3ProjectId: "f3proj-clean-up-demo", userId: "u-mid-3", hoursLogged: 0, joinedAt: daysAgo(1) },
+  { id: "pm-1", f3ProjectId: "f3proj-mid-river", userId: "u-mid-1", hoursLogged: 0, joinedAt: daysAgo(1) },
+  { id: "pm-2", f3ProjectId: "f3proj-mid-river", userId: "u-mid-2", hoursLogged: 0, joinedAt: daysAgo(1) },
+  { id: "pm-3", f3ProjectId: "f3proj-mid-river", userId: "u-mid-3", hoursLogged: 0, joinedAt: daysAgo(1) },
+  { id: "pm-4", f3ProjectId: "f3proj-south-serves", userId: "u-south-1", hoursLogged: 0, joinedAt: daysAgo(1) },
+  { id: "pm-5", f3ProjectId: "f3proj-south-serves", userId: "u-south-2", hoursLogged: 0, joinedAt: daysAgo(1) },
+  { id: "pm-6", f3ProjectId: "f3proj-mid-mentor", userId: "u-mid-1", hoursLogged: 8, joinedAt: daysAgo(20) },
+  { id: "pm-7", f3ProjectId: "f3proj-mid-mentor", userId: "u-mid-2", hoursLogged: 8, joinedAt: daysAgo(20) },
+  { id: "pm-8", f3ProjectId: "f3proj-mid-mentor", userId: "u-mid-3", hoursLogged: 8, joinedAt: daysAgo(20) },
+  { id: "pm-9", f3ProjectId: "f3proj-mid-mentor", userId: "u-mid-4", hoursLogged: 8, joinedAt: daysAgo(20) },
 ];
 
 export const getAo = (id: string) => aos.find((ao) => ao.id === id);
@@ -291,24 +303,24 @@ export const getUser = (id: string) => users.find((user) => user.id === id);
 export const getOrg = (id: string) => orgs.find((org) => org.id === id);
 export const getOpportunity = (id: string) =>
   opportunities.find((opp) => opp.id === id);
-export const getActivation = (id: string) =>
-  activations.find((activation) => activation.id === id);
-export const getActivationBySlug = (slugOrId: string) =>
-  activations.find(
-    (activation) =>
-      activation.id === slugOrId || slugify(activation.title) === slugOrId
+export const getF3Project = (f3ProjectId: string) =>
+  projects.find((project) => project.f3ProjectId === f3ProjectId);
+export const getF3ProjectBySlug = (slugOrId: string) =>
+  projects.find(
+    (project) =>
+      project.f3ProjectId === slugOrId || slugify(project.title) === slugOrId
   );
 
-export const getParticipantsForActivation = (activationId: string) =>
-  participants.filter((p) => p.activationId === activationId);
+export const getMembershipsForProject = (f3ProjectId: string) =>
+  projectMemberships.filter((membership) => membership.f3ProjectId === f3ProjectId);
 
-export const getActivationsForAo = (aoId: string) =>
-  activations.filter((activation) => activation.aoId === aoId);
+export const getProjectsForAo = (aoId: string) =>
+  projects.filter((project) => project.aoId === aoId);
 
 export const getUsersForAo = (aoId: string) => users.filter((user) => user.aoId === aoId);
 
-export const getActivationsForTemplate = (opportunityId: string) =>
-  activations.filter((activation) => activation.opportunityId === opportunityId);
+export const getProjectsForTemplate = (opportunityId: string) =>
+  projects.filter((project) => project.opportunityId === opportunityId);
 export const getOrgBySlug = (slugOrId: string) =>
   orgs.find((org) => org.id === slugOrId || slugify(org.name) === slugOrId);
 export const getOpportunityBySlug = (slugOrId: string) =>
@@ -317,16 +329,14 @@ export const getOpportunityBySlug = (slugOrId: string) =>
       opportunity.id === slugOrId || slugify(opportunity.title) === slugOrId
   );
 
-export const getAttendanceByActivation = (activationId: string) => {
-  const rows = getParticipantsForActivation(activationId);
-  const going = rows.filter((row) => row.status === "GOING");
-  const attended = rows.filter((row) => row.status === "ATTENDED");
+export const getMembershipSummary = (f3ProjectId: string) => {
+  const rows = getMembershipsForProject(f3ProjectId);
   const totalHours = rows.reduce((sum, row) => sum + row.hoursLogged, 0);
+  const membersWithLoggedHours = rows.filter((row) => row.hoursLogged > 0).length;
   return {
     rows,
-    going,
-    attended,
-    totalCount: rows.length,
+    totalMembers: rows.length,
+    membersWithLoggedHours,
     totalHours,
   };
 };

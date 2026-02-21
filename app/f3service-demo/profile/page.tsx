@@ -1,9 +1,9 @@
 import Link from "next/link";
 import {
-  activations,
+  projects,
   getAo,
-  getAttendanceByActivation,
-  participants,
+  getMembershipSummary,
+  projectMemberships,
   users,
   getOpportunity,
 } from "@/lib/f3service-demo-data";
@@ -17,8 +17,8 @@ export default function ProfilePage() {
     return <p className="text-gray-600">Demo user not found.</p>;
   }
 
-  const myParticipation = participants.filter((row) => row.userId === currentUser.id);
-  const completedCount = myParticipation.filter((row) => row.status === "ATTENDED").length;
+  const myMemberships = projectMemberships.filter((row) => row.userId === currentUser.id);
+  const completedCount = myMemberships.filter((row) => row.hoursLogged > 0).length;
   const ao = getAo(currentUser.aoId);
 
   return (
@@ -37,7 +37,7 @@ export default function ProfilePage() {
             <p className="text-2xl font-semibold text-gray-900">{currentUser.totalHours}h</p>
           </div>
           <div className="rounded-lg border border-gray-200 p-3">
-            <p className="text-gray-500">Events Attended</p>
+            <p className="text-gray-500">Projects Completed</p>
             <p className="text-2xl font-semibold text-gray-900">{completedCount}</p>
           </div>
           <div className="rounded-lg border border-gray-200 p-3">
@@ -48,25 +48,25 @@ export default function ProfilePage() {
       </section>
 
       <section className="bg-white border border-gray-200 rounded-xl p-6">
-        <h3 className="text-lg font-semibold text-gray-900">Your service history</h3>
+        <h3 className="text-lg font-semibold text-gray-900">Your project history</h3>
         <ul className="mt-3 space-y-3">
-          {myParticipation.map((row) => {
-            const activation = activations.find((evt) => evt.id === row.activationId);
-            const opp = activation ? getOpportunity(activation.opportunityId) : null;
-            const rsvp = getAttendanceByActivation(row.activationId);
-            const statusLabel = row.status === "ATTENDED" ? "Attended" : "RSVP";
+          {myMemberships.map((row) => {
+            const project = projects.find((evt) => evt.f3ProjectId === row.f3ProjectId);
+            const opp = project ? getOpportunity(project.opportunityId) : null;
+            const summary = getMembershipSummary(row.f3ProjectId);
+            const statusLabel = row.hoursLogged > 0 ? "Completed" : "Joined";
 
             return (
               <li key={row.id} className="rounded-lg border border-gray-200 p-3">
-                <p className="font-medium text-gray-900">{activation?.title ?? row.activationId}</p>
+                <p className="font-medium text-gray-900">{project?.title ?? row.f3ProjectId}</p>
                 <p className="text-sm text-gray-600">Template: {opp?.title ?? "Unknown template"}</p>
                 <p className="text-sm text-gray-600">
-                  {statusLabel} · {row.hoursLogged}h logged · {rsvp.totalCount} total RSVPs
+                  {statusLabel} · {row.hoursLogged}h logged · {summary.totalMembers} total members
                 </p>
               </li>
             );
           })}
-          {myParticipation.length === 0 ? (
+          {myMemberships.length === 0 ? (
             <p className="text-sm text-gray-500">No participation yet.</p>
           ) : null}
         </ul>

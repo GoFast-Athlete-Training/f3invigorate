@@ -1,7 +1,7 @@
 import Link from "next/link";
 import {
-  getActivationsForAo,
-  getAttendanceByActivation,
+  getProjectsForAo,
+  getMembershipSummary,
   getUsersForAo,
   formatDate,
   aos,
@@ -13,7 +13,7 @@ export default function AOTrainingDashboard() {
     <div className="mx-auto max-w-5xl space-y-6">
       <h1 className="text-3xl font-bold text-gray-900">Service Engine Demo — AO Dashboard</h1>
       <p className="text-gray-600">
-        Minimal AO-level view with event roster counts and goals.
+        Minimal AO-level view with project memberships and goals.
       </p>
 
       <ServiceEngineNav activeHref="/f3service-demo/ao" />
@@ -23,7 +23,7 @@ export default function AOTrainingDashboard() {
           const aoMembers = getUsersForAo(ao.id);
           const aoHours = aoMembers.reduce((sum, user) => sum + user.totalHours, 0);
           const goalPct = Math.min(Math.round((aoHours / ao.quarterlyGoalHours) * 100), 100);
-          const aoActivations = getActivationsForAo(ao.id);
+          const aoProjects = getProjectsForAo(ao.id);
 
           return (
             <section key={ao.id} className="bg-white border border-gray-200 rounded-xl p-5">
@@ -41,39 +41,39 @@ export default function AOTrainingDashboard() {
                 <p>Goal Hours: {ao.quarterlyGoalHours}</p>
                 <p>Current Hours: {aoHours}</p>
                 <p>Progress: {goalPct}%</p>
-                <p>Events: {aoActivations.length}</p>
+                <p>Projects: {aoProjects.length}</p>
               </div>
 
               <div className="mt-4">
-                <h3 className="font-medium text-gray-900">Upcoming and completed events</h3>
+                <h3 className="font-medium text-gray-900">Upcoming and completed projects</h3>
                 <div className="mt-2 space-y-2">
-                  {aoActivations.map((event) => {
-                    const attendance = getAttendanceByActivation(event.id);
+                  {aoProjects.map((project) => {
+                    const memberships = getMembershipSummary(project.f3ProjectId);
                     return (
                       <Link
-                        key={event.id}
-                        href={`/f3service-demo/events/${event.id}`}
+                        key={project.f3ProjectId}
+                        href={`/f3service-demo/events/${project.f3ProjectId}`}
                         className="block rounded-lg border border-gray-200 p-3 hover:border-blue-300 hover:bg-blue-50/40"
                       >
                         <div className="flex flex-wrap items-start justify-between gap-2">
-                          <p className="font-semibold text-gray-900">{event.title}</p>
+                          <p className="font-semibold text-gray-900">{project.title}</p>
                           <span className="text-xs px-2 py-1 rounded-md bg-gray-100 text-gray-700">
-                            {event.status}
+                            {project.isCompleted ? "COMPLETED" : "UPCOMING"}
                           </span>
                         </div>
-                        <p className="text-sm text-gray-600">{formatDate(event.date)}</p>
+                        <p className="text-sm text-gray-600">{formatDate(project.startTime)}</p>
                         <p className="text-sm text-gray-600">
-                          RSVP: {attendance.totalCount} / goal {event.goalHeadcount}
+                          Members joined: {memberships.totalMembers}
                         </p>
                         <p className="text-xs text-gray-500">
-                          Going {attendance.going.length}, Attended {attendance.attended.length}
+                          Logged hours: {memberships.totalHours}h
                         </p>
                       </Link>
                     );
                   })}
 
-                  {aoActivations.length === 0 ? (
-                    <p className="text-sm text-gray-500">No events adopted yet.</p>
+                  {aoProjects.length === 0 ? (
+                    <p className="text-sm text-gray-500">No projects yet.</p>
                   ) : null}
                 </div>
               </div>

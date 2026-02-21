@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
-  getActivation,
+  getF3Project,
   getOrg,
   getOpportunity,
-  getParticipantsForActivation,
+  getMembershipsForProject,
   getUser,
   formatDate,
 } from "@/lib/f3service-demo-data";
@@ -15,38 +15,36 @@ type Props = {
 };
 
 export default async function EventPage({ params }: Props) {
-  const { activationId } = await params;
-  const activation = getActivation(activationId);
-  if (!activation) {
+  const { activationId: f3ProjectId } = await params;
+  const project = getF3Project(f3ProjectId);
+  if (!project) {
     notFound();
   }
 
-  const template = getOpportunity(activation.opportunityId);
+  const template = getOpportunity(project.opportunityId);
   const org = template ? getOrg(template.orgId) : null;
-  const participants = getParticipantsForActivation(activation.id);
-  const totalHours = participants.reduce((sum, row) => sum + row.hoursLogged, 0);
-  const going = participants.filter((row) => row.status === "GOING");
-  const attended = participants.filter((row) => row.status === "ATTENDED");
+  const memberships = getMembershipsForProject(project.f3ProjectId);
+  const totalHours = memberships.reduce((sum, row) => sum + row.hoursLogged, 0);
 
   return (
     <div className="mx-auto max-w-4xl space-y-6">
-      <h1 className="text-3xl font-bold text-gray-900">Service Event</h1>
-      <ServiceEngineNav activeHref={`/f3service-demo/events/${activation.id}`} />
+      <h1 className="text-3xl font-bold text-gray-900">Service Project</h1>
+      <ServiceEngineNav activeHref={`/f3service-demo/events/${project.f3ProjectId}`} />
 
       <section className="bg-white border border-gray-200 rounded-xl p-6">
         <div className="flex flex-wrap justify-between gap-3">
           <div>
-            <h2 className="text-2xl font-semibold text-gray-900">{activation.title}</h2>
+            <h2 className="text-2xl font-semibold text-gray-900">{project.title}</h2>
             <p className="text-sm text-gray-600">{org?.name ?? "Unknown org"}</p>
           </div>
           <span
             className={`inline-flex px-3 py-1 rounded-full text-xs font-semibold ${
-              activation.status === "UPCOMING"
+              !project.isCompleted
                 ? "bg-amber-100 text-amber-800"
                 : "bg-green-100 text-green-800"
             }`}
           >
-            {activation.status}
+            {project.isCompleted ? "COMPLETED" : "UPCOMING"}
           </span>
         </div>
 
@@ -54,22 +52,19 @@ export default async function EventPage({ params }: Props) {
           Template: {template?.title ?? "No template"}
           {template ? ` • ${template.location}` : ""}
         </p>
-        <p className="text-sm text-gray-700">Date: {formatDate(activation.date)}</p>
-        <p className="text-sm text-gray-700">
-          Targets: {activation.goalHeadcount} people • {activation.goalHours} hours
-        </p>
+        <p className="text-sm text-gray-700">Start: {formatDate(project.startTime)}</p>
+        <p className="text-sm text-gray-700">Hours working: {project.hoursWorking}h</p>
+        <p className="text-sm text-gray-700 mt-2">{project.description}</p>
       </section>
 
       <section className="bg-white border border-gray-200 rounded-xl p-6">
-        <h3 className="text-xl font-semibold text-gray-900">RSVP + Attendance</h3>
+        <h3 className="text-xl font-semibold text-gray-900">Project Membership</h3>
         <p className="mt-1 text-gray-700">
-          Total signups: {participants.length} | Going: {going.length} | Attended: {attended.length} | Logged:
-          {" "}
-          {totalHours}h
+          Joined members: {memberships.length} | Total logged: {totalHours}h
         </p>
 
         <ul className="mt-4 divide-y divide-gray-200">
-          {participants.map((row) => {
+          {memberships.map((row) => {
             const user = getUser(row.userId);
             return (
               <li key={row.id} className="py-3 flex flex-wrap items-center justify-between gap-2">
@@ -78,13 +73,13 @@ export default async function EventPage({ params }: Props) {
                   <p className="text-sm text-gray-600">{user?.email ?? "No email on file"}</p>
                 </div>
                 <div className="text-sm text-right">
-                  <p className="text-gray-700">{row.status}</p>
+                  <p className="text-gray-700">Joined</p>
                   <p className="text-gray-500">{row.hoursLogged}h logged</p>
                 </div>
               </li>
             );
           })}
-          {participants.length === 0 ? <p className="text-sm text-gray-500 py-3">No participants yet.</p> : null}
+          {memberships.length === 0 ? <p className="text-sm text-gray-500 py-3">No members yet.</p> : null}
         </ul>
       </section>
 

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { aos, opportunities, orgs, getActivationsForTemplate } from "@/lib/f3service-demo-data";
+import { aos, opportunities, orgs, getProjectsForTemplate } from "@/lib/f3service-demo-data";
 import { ServiceEngineNav } from "../_components/ServiceEngineNav";
 
 export default function OrgTemplatesPage() {
@@ -31,7 +31,7 @@ export default function OrgTemplatesPage() {
               {opportunities
                 .filter((opp) => opp.orgId === org.id)
                 .map((opp) => {
-                  const activeCopies = getActivationsForTemplate(opp.id);
+                  const activeCopies = getProjectsForTemplate(opp.id);
                   const activeCopyText = activeCopies.length
                     ? `${activeCopies.length} AO${activeCopies.length === 1 ? "" : "s"} adopted`
                     : "Not adopted yet";

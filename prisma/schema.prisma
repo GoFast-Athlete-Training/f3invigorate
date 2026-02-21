@@ -13,7 +13,7 @@ model F3HIM {
   id String @id @default(cuid())
 
   // Auth
-  firebaseId String @unique
+  firebaseId String  @unique
   email      String?
 
   // Identity
@@ -27,23 +27,25 @@ model F3HIM {
   updatedAt DateTime @updatedAt
 
   // Relations
-  attendanceRecords   AttendanceRecord[]
-  effortRecords       EffortRecord[]
-  weeklyReflections   WeeklyReflection[] // deprecated UX, keep table
-  selfReportEntries   SelfReportEntry[]   // deprecated UX, keep table
-  volunteerProfile    VolunteerProfile?
+  attendanceRecords     AttendanceRecord[]
+  effortRecords         EffortRecord[]
+  weeklyReflections     WeeklyReflection[] // deprecated UX, keep table
+  selfReportEntries     SelfReportEntry[] // deprecated UX, keep table
+  volunteerProfile      VolunteerProfile?
   volunteerApplications VolunteerApplication[]
+  createdProjects       F3Project[]            @relation("ProjectCreatedBy")
+  projectMemberships    F3ProjectMembership[]
 
   @@map("f3_hims")
 }
 
 model AttendanceRecord {
-  id      String   @id @default(cuid())
+  id      String           @id @default(cuid())
   f3HIMId String
   aoId    String
   date    DateTime
   source  AttendanceSource
-  f3HIM   F3HIM @relation(fields: [f3HIMId], references: [id], onDelete: Cascade)
+  f3HIM   F3HIM            @relation(fields: [f3HIMId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -63,7 +65,7 @@ model EffortRecord {
   calories    Int?
   durationSec Int?
   calPerMin   Float?
-  f3HIM       F3HIM @relation(fields: [f3HIMId], references: [id], onDelete: Cascade)
+  f3HIM       F3HIM    @relation(fields: [f3HIMId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -79,7 +81,7 @@ model WeeklyReflection {
   wins      String?
   struggles String?
   intention String?
-  f3HIM     F3HIM @relation(fields: [f3HIMId], references: [id], onDelete: Cascade)
+  f3HIM     F3HIM    @relation(fields: [f3HIMId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -88,12 +90,12 @@ model WeeklyReflection {
 }
 
 model SelfReportEntry {
-  id          String            @id @default(cuid())
-  f3HIMId     String
-  date        DateTime          @default(now())
-  category    SelfReportCategory
-  note        String?
-  f3HIM       F3HIM @relation(fields: [f3HIMId], references: [id], onDelete: Cascade)
+  id       String             @id @default(cuid())
+  f3HIMId  String
+  date     DateTime           @default(now())
+  category SelfReportCategory
+  note     String?
+  f3HIM    F3HIM              @relation(fields: [f3HIMId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -141,65 +143,106 @@ enum OpportunityStatus {
   CLOSED
 }
 
+// ---------------------------------------------------------------------------
+// F3 Service Engine (public hydration anchored by f3ProjectId)
+// ---------------------------------------------------------------------------
+
+model F3Project {
+  f3ProjectId  String                @id @default(cuid())
+  createdById  String
+  title        String
+  slug         String?               @unique
+  startTime    DateTime
+  hoursWorking Int
+  description  String                @db.Text
+  isCompleted  Boolean               @default(false)
+  createdBy    F3HIM                 @relation("ProjectCreatedBy", fields: [createdById], references: [id], onDelete: Cascade)
+  memberships  F3ProjectMembership[]
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
+
+  @@index([startTime])
+  @@map("f3_projects")
+}
+
+model F3ProjectMembership {
+  id          String    @id @default(cuid())
+  f3ProjectId String
+  f3himId     String
+  hoursLogged Int       @default(0)
+  joinedAt    DateTime  @default(now())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  project     F3Project @relation(fields: [f3ProjectId], references: [f3ProjectId], onDelete: Cascade)
+  f3him       F3HIM     @relation(fields: [f3himId], references: [id], onDelete: Cascade)
+
+  @@unique([f3ProjectId, f3himId])
+  @@index([f3ProjectId])
+  @@map("f3_project_memberships")
+}
+
 model VolunteerProfile {
-  f3himId             String   @id
-  f3him               F3HIM    @relation(fields: [f3himId], references: [id], onDelete: Cascade)
-  skills              String[] @default([])
-  interests           String[] @default([])
-  availability        String   @db.Text @default("")
+  f3himId              String         @id
+  f3him                F3HIM          @relation(fields: [f3himId], references: [id], onDelete: Cascade)
+  skills               String[]       @default([])
+  interests            String[]       @default([])
+  availability         String         @default("") @db.Text
   commitmentPreference CommitmentType @default(ONE_TIME)
-  remotePreference    Boolean  @default(false)
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  remotePreference     Boolean        @default(false)
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+
   @@map("volunteer_profiles")
 }
 
 model Organization {
-  id           String  @id @default(cuid())
-  name         String
-  description  String  @db.Text
-  contactEmail String
-  website      String?
-  location     String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id            String                 @id @default(cuid())
+  name          String
+  description   String                 @db.Text
+  contactEmail  String
+  website       String?
+  location      String?
+  createdAt     DateTime               @default(now())
+  updatedAt     DateTime               @updatedAt
   opportunities VolunteerOpportunity[]
+
   @@map("organizations")
 }
 
 model VolunteerOpportunity {
-  id              String            @id @default(cuid())
-  organizationId  String
-  organization    Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  title           String
-  description     String            @db.Text
-  category        OpportunityCategory
-  location        String?
-  commitmentType  CommitmentType
-  estimatedHours  Int?
-  startDate       DateTime?
-  endDate         DateTime?
-  isRemote        Boolean           @default(false)
-  requiredSkills  String[]
-  volunteersNeeded Int             @default(1)
-  status          OpportunityStatus @default(OPEN)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  applications    VolunteerApplication[]
+  id               String                 @id @default(cuid())
+  organizationId   String
+  organization     Organization           @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  title            String
+  description      String                 @db.Text
+  category         OpportunityCategory
+  location         String?
+  commitmentType   CommitmentType
+  estimatedHours   Int?
+  startDate        DateTime?
+  endDate          DateTime?
+  isRemote         Boolean                @default(false)
+  requiredSkills   String[]
+  volunteersNeeded Int                    @default(1)
+  status           OpportunityStatus      @default(OPEN)
+  createdAt        DateTime               @default(now())
+  updatedAt        DateTime               @updatedAt
+  applications     VolunteerApplication[]
+
   @@map("volunteer_opportunities")
 }
 
 model VolunteerApplication {
-  id           String              @id @default(cuid())
-  volunteerId  String
-  volunteer    F3HIM               @relation(fields: [volunteerId], references: [id], onDelete: Cascade)
+  id            String               @id @default(cuid())
+  volunteerId   String
+  volunteer     F3HIM                @relation(fields: [volunteerId], references: [id], onDelete: Cascade)
   opportunityId String
-  opportunity  VolunteerOpportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
-  status       ApplicationStatus   @default(PENDING)
-  message      String?             @db.Text
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  opportunity   VolunteerOpportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  status        ApplicationStatus    @default(PENDING)
+  message       String?              @db.Text
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+
   @@unique([volunteerId, opportunityId])
   @@map("volunteer_applications")
 }
-
