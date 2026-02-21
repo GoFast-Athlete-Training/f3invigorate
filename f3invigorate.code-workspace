@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../gofastapp-mvp"
+		},
+		{
+			"path": "../gofast-contentpublic"
+		}
+	],
+	"settings": {}
+}

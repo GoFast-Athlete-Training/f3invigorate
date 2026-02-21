@@ -11,8 +11,8 @@ export default async function F3ServeDashboardPage() {
     redirect("/login?next=/f3serve/dashboard");
   }
 
-  const applications = await prisma.volunteerApplication.findMany({
-    where: { volunteerId: f3him.id },
+  const commitments = await prisma.volunteerCommitment.findMany({
+    where: { f3himId: f3him.id },
     include: {
       opportunity: { include: { organization: { select: { name: true } } } },
     },
@@ -22,45 +22,48 @@ export default async function F3ServeDashboardPage() {
   return (
     <div>
       <h1 className="text-2xl font-bold text-gray-900">f3serve Dashboard</h1>
-      <p className="mt-2 text-gray-600">Your applications and volunteer activity.</p>
+      <p className="mt-2 text-gray-600">Your volunteer commitments and activity.</p>
 
       <section className="mt-6">
-        <h2 className="text-lg font-semibold text-gray-800">My Applications</h2>
-        {applications.length === 0 ? (
+        <h2 className="text-lg font-semibold text-gray-800">My Commitments</h2>
+        {commitments.length === 0 ? (
           <div className="mt-2 bg-white rounded-xl border border-gray-200 p-6 text-center text-gray-500">
-            You haven&apos;t applied to any opportunities yet.{" "}
+            You haven&apos;t committed to any opportunities yet.{" "}
             <Link href="/f3serve/opportunities" className="text-blue-600 hover:underline">
               Browse opportunities
             </Link>
           </div>
         ) : (
           <ul className="mt-2 space-y-2">
-            {applications.map((app) => (
+            {commitments.map((commitment) => (
               <li
-                key={app.id}
+                key={commitment.id}
                 className="bg-white rounded-xl border border-gray-200 p-4 flex flex-wrap items-center justify-between gap-2"
               >
                 <div>
                   <Link
-                    href={`/f3serve/opportunities/${app.opportunityId}`}
+                    href={`/f3serve/opportunities/${commitment.opportunityId}`}
                     className="font-medium text-gray-900 hover:underline"
                   >
-                    {app.opportunity.title}
+                    {commitment.opportunity.title}
                   </Link>
                   <span className="text-sm text-gray-500 ml-2">
-                    {app.opportunity.organization.name}
+                    {commitment.opportunity.organization.name}
                   </span>
+                  {commitment.hoursLogged > 0 && (
+                    <span className="text-sm text-green-600 ml-2">
+                      {commitment.hoursLogged} hrs logged
+                    </span>
+                  )}
                 </div>
                 <span
                   className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ${
-                    app.status === "APPROVED"
+                    commitment.completedAt
                       ? "bg-green-100 text-green-800"
-                      : app.status === "REJECTED"
-                        ? "bg-red-100 text-red-800"
-                        : "bg-gray-100 text-gray-700"
+                      : "bg-blue-100 text-blue-800"
                   }`}
                 >
-                  {app.status}
+                  {commitment.completedAt ? "Complete" : "Active"}
                 </span>
               </li>
             ))}

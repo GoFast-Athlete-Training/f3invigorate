@@ -17,34 +17,24 @@ export default async function Dashboard() {
   startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
   startOfWeek.setHours(0, 0, 0, 0);
 
-  const attendanceCount = await prisma.attendanceRecord.count({
+  const attendanceCount = await prisma.f3ActivityLog.count({
     where: {
-      f3HIMId: f3him.id,
+      f3himId: f3him.id,
       date: {
         gte: startOfWeek,
       },
     },
   });
 
-  // Get recent effort entries (last 5)
-  const recentEfforts = await prisma.effortRecord.findMany({
+  // Get recent activity entries (last 5)
+  const recentActivity = await prisma.f3ActivityLog.findMany({
     where: {
-      f3HIMId: f3him.id,
+      f3himId: f3him.id,
     },
     orderBy: {
       date: "desc",
     },
     take: 5,
-  });
-
-  // Get latest weekly reflection (deprecated, kept for data)
-  const latestReflection = await prisma.weeklyReflection.findFirst({
-    where: {
-      f3HIMId: f3him.id,
-    },
-    orderBy: {
-      date: "desc",
-    },
   });
 
   return (
@@ -76,37 +66,25 @@ export default async function Dashboard() {
               >
                 Log Effort
               </Link>
-              <Link
-                href="/reflection/week"
-                className="block w-full text-left px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600"
-              >
-                Weekly Reflection
-              </Link>
-              <Link
-                href="/self-report/new"
-                className="block w-full text-left px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-500"
-              >
-                New Self-Report
-              </Link>
             </div>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">Recent Effort Entries</h2>
-            {recentEfforts.length === 0 ? (
-              <p className="text-gray-500">No effort entries yet</p>
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">Recent Activity</h2>
+            {recentActivity.length === 0 ? (
+              <p className="text-gray-500">No activity yet</p>
             ) : (
               <ul className="space-y-2">
-                {recentEfforts.map((effort) => (
-                  <li key={effort.id} className="border-b pb-2">
+                {recentActivity.map((activity) => (
+                  <li key={activity.id} className="border-b pb-2">
                     <div className="flex justify-between">
                       <span className="text-gray-700">
-                        {new Date(effort.date).toLocaleDateString()}
+                        {new Date(activity.date).toLocaleDateString()}
                       </span>
                       <span className="text-gray-600">
-                        {effort.calories} cal / {effort.durationSec != null ? Math.round(effort.durationSec / 60) : "—"} min
+                        {activity.calories ? `${activity.calories} cal` : "—"} / {activity.durationSec != null ? `${Math.round(activity.durationSec / 60)} min` : "—"}
                       </span>
                     </div>
                   </li>
@@ -116,26 +94,13 @@ export default async function Dashboard() {
           </div>
 
           <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">Latest Weekly Reflection</h2>
-            {latestReflection ? (
-              <div className="space-y-2">
-                <p className="text-sm text-gray-500">
-                  {new Date(latestReflection.date).toLocaleDateString()}
-                </p>
-                {latestReflection.mood && (
-                  <div>
-                    <span className="font-semibold">Mood:</span> {latestReflection.mood}
-                  </div>
-                )}
-                {latestReflection.wins && (
-                  <div>
-                    <span className="font-semibold">Wins:</span> {latestReflection.wins}
-                  </div>
-                )}
-              </div>
-            ) : (
-              <p className="text-gray-500">No reflections yet</p>
-            )}
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">Service Activity</h2>
+            <p className="text-gray-500 text-sm">
+              Track your service hours through{" "}
+              <Link href="/f3serve" className="text-blue-600 hover:underline">
+                f3serve
+              </Link>
+            </p>
           </div>
         </div>
 

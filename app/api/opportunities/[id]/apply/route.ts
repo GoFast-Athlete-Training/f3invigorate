@@ -5,8 +5,8 @@ import { getCurrentF3HIM } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
-const applySchema = z.object({
-  message: z.string().optional(),
+const commitSchema = z.object({
+  note: z.string().optional(),
 });
 
 type RouteParams = { params: Promise<{ id: string }> };
@@ -20,22 +20,22 @@ export async function POST(request: Request, { params }: RouteParams) {
 
     const { id: opportunityId } = await params;
     const body = await request.json().catch(() => ({}));
-    const data = applySchema.parse(body);
+    const data = commitSchema.parse(body);
 
-    const application = await prisma.volunteerApplication.create({
+    const commitment = await prisma.volunteerCommitment.create({
       data: {
-        volunteerId: f3him.id,
+        f3himId: f3him.id,
         opportunityId,
-        message: data.message,
+        note: data.note,
       },
     });
 
-    return NextResponse.json(application, { status: 201 });
+    return NextResponse.json(commitment, { status: 201 });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: error.errors }, { status: 400 });
     }
-    console.error("Apply to opportunity error:", error);
+    console.error("Commit to opportunity error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

@@ -54,22 +54,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create attendance records for each F3HIM
-    const attendanceRecords = f3hims.map((him) => ({
-      f3HIMId: him.id,
+    // Create activity log entries for each F3HIM
+    const activityLogs = f3hims.map((him) => ({
+      f3himId: him.id,
       aoId: validated.ao,
       date: date,
       source: "BACKBLAST" as const,
     }));
 
-    await prisma.attendanceRecord.createMany({
-      data: attendanceRecords,
+    await prisma.f3ActivityLog.createMany({
+      data: activityLogs,
       skipDuplicates: true,
     });
 
     return NextResponse.json({
       success: true,
-      message: `Created ${f3hims.length} attendance record(s)`,
+      message: `Created ${f3hims.length} activity log entr${f3hims.length === 1 ? 'y' : 'ies'}`,
     });
   } catch (error) {
     if (error instanceof z.ZodError) {

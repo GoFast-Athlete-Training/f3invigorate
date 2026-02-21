@@ -7,8 +7,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// F3HIM - F3 Invigorate Identity Model
-// Represents a member of F3 (Fitness, Fellowship, Faith)
+// ============================================================================
+// CORE IDENTITY
+// ============================================================================
+
 model F3HIM {
   id String @id @default(cuid())
 
@@ -22,35 +24,102 @@ model F3HIM {
   f3Handle  String? @unique
   photoURL  String?
 
+  // Personal
+  bio         String? @db.Text
+  phoneNumber String?
+  city        String?
+  state       String?
+
+  // Service
+  myCauses        ServiceCause[] @default([])
+  volunteerSkills String?        @db.Text  // For external matching
+  availability    String?        @db.Text  // "Weekends, open to remote"
+
   // System
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // Relations
-  attendanceRecords     AttendanceRecord[]
-  effortRecords         EffortRecord[]
-  weeklyReflections     WeeklyReflection[] // deprecated UX, keep table
-  selfReportEntries     SelfReportEntry[] // deprecated UX, keep table
-  volunteerProfile      VolunteerProfile?
-  volunteerApplications VolunteerApplication[]
-  createdProjects       F3Project[]            @relation("ProjectCreatedBy")
-  projectMemberships    F3ProjectMembership[]
+  // Relations (4 total)
+  activityLog          F3ActivityLog[]
+  aoMemberships        AOCentral[]
+  projectCommitments   ProjectCentral[]
+  volunteerCommitments VolunteerCommitment[]
 
   @@map("f3_hims")
 }
 
-model AttendanceRecord {
-  id      String           @id @default(cuid())
-  f3HIMId String
-  aoId    String
-  date    DateTime
-  source  AttendanceSource
-  f3HIM   F3HIM            @relation(fields: [f3HIMId], references: [id], onDelete: Cascade)
+// ============================================================================
+// AO (Area of Operation)
+// ============================================================================
+
+model AO {
+  id     String @id @default(cuid())
+  name   String
+  city   String?
+  state  String?
+  region String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@map("attendance_records")
+  members      AOCentral[]
+  activityLogs F3ActivityLog[]
+  projects     F3Project[]
+
+  @@index([city, state])
+  @@map("aos")
+}
+
+model AOCentral {
+  id      String       @id @default(cuid())
+  f3himId String
+  aoId    String
+  role    AOMemberRole @default(MEMBER)
+
+  joinedAt  DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  f3him F3HIM @relation(fields: [f3himId], references: [id], onDelete: Cascade)
+  ao    AO    @relation(fields: [aoId], references: [id], onDelete: Cascade)
+
+  @@unique([f3himId, aoId])
+  @@index([aoId])
+  @@index([f3himId])
+  @@map("ao_central")
+}
+
+enum AOMemberRole {
+  MEMBER
+  Q
+  SITE_Q
+}
+
+// ============================================================================
+// F3 WORKOUT TRACKING
+// ============================================================================
+
+model F3ActivityLog {
+  id      String @id @default(cuid())
+  f3himId String
+  aoId    String?
+  date    DateTime
+
+  calories    Int?
+  durationSec Int?
+  calPerMin   Float?
+
+  source AttendanceSource
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  f3him F3HIM @relation(fields: [f3himId], references: [id], onDelete: Cascade)
+  ao    AO?    @relation(fields: [aoId], references: [id], onDelete: SetNull)
+
+  @@index([f3himId, date])
+  @@index([aoId])
+  @@map("f3_activity_log")
 }
 
 enum AttendanceSource {
@@ -58,150 +127,79 @@ enum AttendanceSource {
   SELF
 }
 
-model EffortRecord {
-  id          String   @id @default(cuid())
-  f3HIMId     String
-  date        DateTime
-  calories    Int?
-  durationSec Int?
-  calPerMin   Float?
-  f3HIM       F3HIM    @relation(fields: [f3HIMId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("effort_records")
-}
-
-model WeeklyReflection {
-  id        String   @id @default(cuid())
-  f3HIMId   String
-  date      DateTime @default(now())
-  mood      String?
-  wins      String?
-  struggles String?
-  intention String?
-  f3HIM     F3HIM    @relation(fields: [f3HIMId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("weekly_reflections")
-}
-
-model SelfReportEntry {
-  id       String             @id @default(cuid())
-  f3HIMId  String
-  date     DateTime           @default(now())
-  category SelfReportCategory
-  note     String?
-  f3HIM    F3HIM              @relation(fields: [f3HIMId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("self_report_entries")
-}
-
-enum SelfReportCategory {
-  FELLOWSHIP
-  SERVICE
-  MARRIAGE_FAMILY
-  DIET_QUEEN
-  MENTAL_HEALTH
-  SPIRITUAL
-}
-
-// ---------------------------------------------------------------------------
-// Volunteer Match (same app, different URL front door)
-// ---------------------------------------------------------------------------
-
-enum CommitmentType {
-  ONE_TIME
-  RECURRING
-  PROJECT_BASED
-  ASYNC
-}
-
-enum OpportunityCategory {
-  MENTORSHIP
-  LABOR
-  EVENTS
-  ADMIN
-  BOARD
-  TECHNICAL
-}
-
-enum ApplicationStatus {
-  PENDING
-  APPROVED
-  REJECTED
-}
-
-enum OpportunityStatus {
-  OPEN
-  CLOSED
-}
-
-// ---------------------------------------------------------------------------
-// F3 Service Engine (public hydration anchored by f3ProjectId)
-// ---------------------------------------------------------------------------
+// ============================================================================
+// F3 SERVICE - GROUP EVENTS
+// ============================================================================
 
 model F3Project {
-  f3ProjectId  String                @id @default(cuid())
-  createdById  String
-  title        String
-  slug         String?               @unique
-  startTime    DateTime
-  hoursWorking Int
-  description  String                @db.Text
-  isCompleted  Boolean               @default(false)
-  createdBy    F3HIM                 @relation("ProjectCreatedBy", fields: [createdById], references: [id], onDelete: Cascade)
-  memberships  F3ProjectMembership[]
-  createdAt    DateTime              @default(now())
-  updatedAt    DateTime              @updatedAt
+  id   String  @id @default(cuid())
+  aoId String? // Optional AO affiliation
+
+  title       String
+  slug        String? @unique
+  description String  @db.Text
+
+  // Timing (NO BOOLEANS)
+  startTime      DateTime
+  endTime        DateTime
+  estimatedHours Int?
+
+  // Location
+  city       String?
+  state      String?
+  address    String?
+  partnerOrg String? // TEXT: "Travis Manion Foundation"
+
+  // Categorization
+  causes ServiceCause[] @default([])
+
+  ao           AO?            @relation(fields: [aoId], references: [id], onDelete: SetNull)
+  participants ProjectCentral[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([startTime])
+  @@index([endTime])
+  @@index([aoId])
   @@map("f3_projects")
 }
 
-model F3ProjectMembership {
-  id          String    @id @default(cuid())
+model ProjectCentral {
+  id          String      @id @default(cuid())
   f3ProjectId String
   f3himId     String
-  hoursLogged Int       @default(0)
-  joinedAt    DateTime  @default(now())
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  project     F3Project @relation(fields: [f3ProjectId], references: [f3ProjectId], onDelete: Cascade)
-  f3him       F3HIM     @relation(fields: [f3himId], references: [id], onDelete: Cascade)
+  role        ProjectRole @default(PARTICIPANT)
+
+  hoursLogged Int      @default(0)
+  joinedAt    DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  project F3Project @relation(fields: [f3ProjectId], references: [id], onDelete: Cascade)
+  f3him   F3HIM     @relation(fields: [f3himId], references: [id], onDelete: Cascade)
 
   @@unique([f3ProjectId, f3himId])
   @@index([f3ProjectId])
-  @@map("f3_project_memberships")
+  @@index([f3himId])
+  @@index([role])
+  @@map("project_central")
 }
 
-model VolunteerProfile {
-  f3himId              String         @id
-  f3him                F3HIM          @relation(fields: [f3himId], references: [id], onDelete: Cascade)
-  skills               String[]       @default([])
-  interests            String[]       @default([])
-  availability         String         @default("") @db.Text
-  commitmentPreference CommitmentType @default(ONE_TIME)
-  remotePreference     Boolean        @default(false)
-  createdAt            DateTime       @default(now())
-  updatedAt            DateTime       @updatedAt
-
-  @@map("volunteer_profiles")
-}
+// ============================================================================
+// F3 SERVICE - INDIVIDUAL OPPORTUNITIES (DATA/CARDS)
+// ============================================================================
 
 model Organization {
-  id            String                 @id @default(cuid())
-  name          String
-  description   String                 @db.Text
-  contactEmail  String
-  website       String?
-  location      String?
+  id           String @id @default(cuid())
+  name         String
+  description  String @db.Text
+  contactEmail String?
+  website      String?
+  logoUrl      String?
+  city         String?
+  state        String?
+
   createdAt     DateTime               @default(now())
   updatedAt     DateTime               @updatedAt
   opportunities VolunteerOpportunity[]
@@ -210,39 +208,99 @@ model Organization {
 }
 
 model VolunteerOpportunity {
-  id               String                 @id @default(cuid())
-  organizationId   String
-  organization     Organization           @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  title            String
-  description      String                 @db.Text
-  category         OpportunityCategory
-  location         String?
-  commitmentType   CommitmentType
-  estimatedHours   Int?
-  startDate        DateTime?
-  endDate          DateTime?
-  isRemote         Boolean                @default(false)
-  requiredSkills   String[]
-  volunteersNeeded Int                    @default(1)
-  status           OpportunityStatus      @default(OPEN)
-  createdAt        DateTime               @default(now())
-  updatedAt        DateTime               @updatedAt
-  applications     VolunteerApplication[]
+  id             String @id @default(cuid())
+  organizationId String
 
+  title       String
+  description String @db.Text
+
+  skillsNeeded    String? @db.Text
+  hoursCommitment Int?
+
+  // Location (NO BOOLEAN)
+  locationType LocationType @default(IN_PERSON)
+  city         String?
+  state        String?
+  address      String?
+
+  // Timing
+  startDate DateTime?
+  endDate   DateTime?
+  status    OpportunityStatus @default(OPEN)
+
+  commitmentType CommitmentType
+  causes         ServiceCause[] @default([])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  organization Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  commitments  VolunteerCommitment[]
+
+  @@index([status])
+  @@index([locationType])
+  @@index([organizationId])
   @@map("volunteer_opportunities")
 }
 
-model VolunteerApplication {
-  id            String               @id @default(cuid())
-  volunteerId   String
-  volunteer     F3HIM                @relation(fields: [volunteerId], references: [id], onDelete: Cascade)
+model VolunteerCommitment {
+  id            String @id @default(cuid())
+  f3himId       String
   opportunityId String
-  opportunity   VolunteerOpportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
-  status        ApplicationStatus    @default(PENDING)
-  message       String?              @db.Text
-  createdAt     DateTime             @default(now())
-  updatedAt     DateTime             @updatedAt
 
-  @@unique([volunteerId, opportunityId])
-  @@map("volunteer_applications")
+  hoursLogged Int       @default(0)
+  note        String?   @db.Text
+  startedAt   DateTime  @default(now())
+  completedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  volunteer   F3HIM                @relation(fields: [f3himId], references: [id], onDelete: Cascade)
+  opportunity VolunteerOpportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+
+  @@unique([f3himId, opportunityId])
+  @@index([f3himId])
+  @@index([opportunityId])
+  @@map("volunteer_commitments")
+}
+
+// ============================================================================
+// ENUMS
+// ============================================================================
+
+enum ServiceCause {
+  VETERANS
+  YOUTH_KIDS
+  FAMILIES_OF_FALLEN
+  HOMELESS_HOUSING
+  ENVIRONMENT
+  DISASTER_RELIEF
+  FAITH_BASED
+  EDUCATION
+  HEALTH_WELLNESS
+  COMMUNITY_GENERAL
+}
+
+enum CommitmentType {
+  ONE_TIME
+  RECURRING
+  PROJECT_BASED
+  ASYNC
+}
+
+enum OpportunityStatus {
+  OPEN
+  CLOSED
+}
+
+enum LocationType {
+  IN_PERSON
+  REMOTE
+  HYBRID
+}
+
+enum ProjectRole {
+  ORGANIZER
+  PARTICIPANT
 }

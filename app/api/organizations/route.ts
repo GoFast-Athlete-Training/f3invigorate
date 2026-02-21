@@ -7,9 +7,11 @@ export const dynamic = "force-dynamic";
 const createOrganizationSchema = z.object({
   name: z.string().min(1),
   description: z.string(),
-  contactEmail: z.string().email(),
+  contactEmail: z.string().email().optional(),
   website: z.string().optional(),
-  location: z.string().optional(),
+  logoUrl: z.string().optional(),
+  city: z.string().optional(),
+  state: z.string().optional(),
 });
 
 export async function POST(request: Request) {
@@ -22,8 +24,10 @@ export async function POST(request: Request) {
         name: data.name,
         description: data.description,
         contactEmail: data.contactEmail,
-        website: data.website || undefined,
-        location: data.location,
+        website: data.website,
+        logoUrl: data.logoUrl,
+        city: data.city,
+        state: data.state,
       },
     });
 

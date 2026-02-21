@@ -1,17 +1,20 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { CommitmentType } from "@prisma/client";
+import { ServiceCause } from "@prisma/client";
 import { getCurrentF3HIM } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
 const updateProfileSchema = z.object({
-  skills: z.array(z.string()).default([]),
-  interests: z.array(z.string()).default([]),
-  availability: z.string().default(""),
-  commitmentPreference: z.nativeEnum(CommitmentType),
-  remotePreference: z.boolean().default(false),
+  photoURL: z.string().url().optional().or(z.literal("")),
+  bio: z.string().optional(),
+  phoneNumber: z.string().optional(),
+  city: z.string().optional(),
+  state: z.string().optional(),
+  myCauses: z.array(z.nativeEnum(ServiceCause)).default([]),
+  volunteerSkills: z.string().optional(),
+  availability: z.string().optional(),
 });
 
 export async function GET() {
@@ -20,20 +23,17 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const profile = await prisma.volunteerProfile.findUnique({
-    where: { f3himId: f3him.id },
+  return NextResponse.json({
+    f3himId: f3him.id,
+    photoURL: f3him.photoURL,
+    bio: f3him.bio,
+    phoneNumber: f3him.phoneNumber,
+    city: f3him.city,
+    state: f3him.state,
+    myCauses: f3him.myCauses,
+    volunteerSkills: f3him.volunteerSkills,
+    availability: f3him.availability,
   });
-
-  return NextResponse.json(
-    profile ?? {
-      f3himId: f3him.id,
-      skills: [],
-      interests: [],
-      availability: "",
-      commitmentPreference: "ONE_TIME",
-      remotePreference: false,
-    }
-  );
 }
 
 export async function PUT(request: Request) {
@@ -46,31 +46,26 @@ export async function PUT(request: Request) {
     const body = await request.json().catch(() => ({}));
     const data = updateProfileSchema.parse(body);
 
-    const profile = await prisma.volunteerProfile.upsert({
-      where: { f3himId: f3him.id },
-      update: {
-        skills: data.skills,
-        interests: data.interests,
+    const updated = await prisma.f3HIM.update({
+      where: { id: f3him.id },
+      data: {
+        photoURL: data.photoURL || null,
+        bio: data.bio,
+        phoneNumber: data.phoneNumber,
+        city: data.city,
+        state: data.state,
+        myCauses: data.myCauses,
+        volunteerSkills: data.volunteerSkills,
         availability: data.availability,
-        commitmentPreference: data.commitmentPreference,
-        remotePreference: data.remotePreference,
-      },
-      create: {
-        f3himId: f3him.id,
-        skills: data.skills,
-        interests: data.interests,
-        availability: data.availability,
-        commitmentPreference: data.commitmentPreference,
-        remotePreference: data.remotePreference,
       },
     });
 
-    return NextResponse.json(profile);
+    return NextResponse.json(updated);
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: error.errors }, { status: 400 });
     }
-    console.error("Update volunteer profile error:", error);
+    console.error("Update profile error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

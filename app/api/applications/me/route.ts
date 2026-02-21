@@ -10,8 +10,8 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const applications = await prisma.volunteerApplication.findMany({
-    where: { volunteerId: f3him.id },
+  const commitments = await prisma.volunteerCommitment.findMany({
+    where: { f3himId: f3him.id },
     include: {
       opportunity: {
         include: { organization: true },
@@ -20,5 +20,5 @@ export async function GET() {
     orderBy: { createdAt: "desc" },
   });
 
-  return NextResponse.json(applications);
+  return NextResponse.json(commitments);
 }

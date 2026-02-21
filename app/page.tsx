@@ -42,7 +42,8 @@ export default function RootSplash() {
             className="mx-auto h-44 w-44 rounded-full border border-white/20 shadow-2xl sm:h-56 sm:w-56"
           />
           <h1 className="mt-8 text-3xl font-bold tracking-wide sm:text-4xl">
-            F3 the Capital - 3F Impact Hub
+            F3 the Capital
+            <span className="block text-white/70">3F Impact Hub</span>
           </h1>
           <p className="mt-3 text-sm text-white/80 sm:text-base">
             Do Good. Make Impact. Invigorate Communities.

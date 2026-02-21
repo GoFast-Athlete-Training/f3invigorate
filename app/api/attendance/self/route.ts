@@ -27,10 +27,10 @@ export async function POST(request: NextRequest) {
       : new Date(validated.date + "T12:00:00");
     date.setHours(12, 0, 0, 0); // Set to noon to avoid timezone issues
 
-    // Create attendance record
-    await prisma.attendanceRecord.create({
+    // Create activity log entry
+    await prisma.f3ActivityLog.create({
       data: {
-        f3HIMId: f3him.id,
+        f3himId: f3him.id,
         aoId: validated.ao,
         date: date,
         source: "SELF",

@@ -34,14 +34,15 @@ export async function POST(request: NextRequest) {
     // Compute calories per minute
     const calPerMin = validated.calories / validated.durationMinutes;
 
-    // Create effort record
-    await prisma.effortRecord.create({
+    // Create activity log entry
+    await prisma.f3ActivityLog.create({
       data: {
-        f3HIMId: f3him.id,
+        f3himId: f3him.id,
         date: date,
         calories: validated.calories,
         durationSec: durationSec,
         calPerMin: calPerMin,
+        source: "SELF",
       },
     });
 

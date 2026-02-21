@@ -11,22 +11,21 @@ export default async function F3ServeProfilePage() {
     redirect("/login?next=/f3serve/profile");
   }
 
-  const profile = await prisma.volunteerProfile.findUnique({
-    where: { f3himId: f3him.id },
-  });
-
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900">Volunteer Profile</h1>
-      <p className="mt-2 text-gray-600">Skills, interests, and availability (used for matching).</p>
+      <h1 className="text-2xl font-bold text-gray-900">Your Profile</h1>
+      <p className="mt-2 text-gray-600">Personal info, causes you care about, and volunteer preferences.</p>
       <div className="mt-6 max-w-xl">
         <VolunteerProfileForm
           initial={{
-            skills: profile?.skills ?? [],
-            interests: profile?.interests ?? [],
-            availability: profile?.availability ?? "",
-            commitmentPreference: profile?.commitmentPreference ?? "ONE_TIME",
-            remotePreference: profile?.remotePreference ?? false,
+            photoURL: f3him.photoURL ?? "",
+            bio: f3him.bio ?? "",
+            phoneNumber: f3him.phoneNumber ?? "",
+            city: f3him.city ?? "",
+            state: f3him.state ?? "",
+            myCauses: f3him.myCauses ?? [],
+            volunteerSkills: f3him.volunteerSkills ?? "",
+            availability: f3him.availability ?? "",
           }}
         />
       </div>

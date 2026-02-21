@@ -40,20 +40,28 @@ export default async function OpportunityDetailPage({ params }: Props) {
         </div>
         <p className="mt-4 text-gray-700 whitespace-pre-wrap">{opportunity.description}</p>
         <div className="mt-4 flex flex-wrap gap-2">
-          <span className="inline-flex items-center rounded-md bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-700">
-            {opportunity.category}
-          </span>
+          {opportunity.causes.map((cause) => (
+            <span key={cause} className="inline-flex items-center rounded-md bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
+              {cause.replace(/_/g, ' ')}
+            </span>
+          ))}
           <span className="inline-flex items-center rounded-md bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-700">
             {opportunity.commitmentType}
           </span>
-          {opportunity.isRemote && (
-            <span className="inline-flex items-center rounded-md bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">
-              Remote
-            </span>
-          )}
+          <span className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ${
+            opportunity.locationType === 'REMOTE' 
+              ? 'bg-green-100 text-green-800' 
+              : opportunity.locationType === 'HYBRID'
+              ? 'bg-purple-100 text-purple-800'
+              : 'bg-gray-100 text-gray-700'
+          }`}>
+            {opportunity.locationType.replace(/_/g, ' ')}
+          </span>
         </div>
-        {opportunity.location && (
-          <p className="mt-2 text-sm text-gray-600">Location: {opportunity.location}</p>
+        {(opportunity.city || opportunity.state) && (
+          <p className="mt-2 text-sm text-gray-600">
+            Location: {opportunity.city}{opportunity.city && opportunity.state ? ', ' : ''}{opportunity.state}
+          </p>
         )}
         <div className="mt-6 border-t border-gray-100 pt-4">
           {f3him ? (

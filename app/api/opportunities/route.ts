@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { CommitmentType, OpportunityCategory, OpportunityStatus } from "@prisma/client";
+import { CommitmentType, OpportunityStatus, LocationType, ServiceCause } from "@prisma/client";
 import type { DisplayOpportunity } from "@/lib/volunteer-fake-data";
 import { FAKE_OPPORTUNITIES } from "@/lib/volunteer-fake-data";
 
@@ -23,10 +23,10 @@ export async function GET() {
             title: r.title,
             description: r.description,
             organizationName: r.organization.name,
-            category: r.category,
+            category: r.causes[0] ?? "COMMUNITY_GENERAL",
             commitmentType: r.commitmentType,
-            isRemote: r.isRemote,
-            location: r.location ?? null,
+            isRemote: r.locationType === "REMOTE" || r.locationType === "HYBRID",
+            location: r.city && r.state ? `${r.city}, ${r.state}` : null,
           }))
         : FAKE_OPPORTUNITIES;
     return NextResponse.json({ opportunities });
@@ -40,15 +40,16 @@ const createOpportunitySchema = z.object({
   organizationId: z.string().min(1),
   title: z.string().min(1),
   description: z.string(),
-  category: z.nativeEnum(OpportunityCategory),
-  location: z.string().optional(),
+  skillsNeeded: z.string().optional(),
+  city: z.string().optional(),
+  state: z.string().optional(),
+  address: z.string().optional(),
   commitmentType: z.nativeEnum(CommitmentType),
-  estimatedHours: z.number().int().min(0).optional(),
+  hoursCommitment: z.number().int().min(0).optional(),
   startDate: z.string().datetime().optional(),
   endDate: z.string().datetime().optional(),
-  isRemote: z.boolean().default(false),
-  requiredSkills: z.array(z.string()).default([]),
-  volunteersNeeded: z.number().int().min(1).default(1),
+  locationType: z.nativeEnum(LocationType).default("IN_PERSON"),
+  causes: z.array(z.nativeEnum(ServiceCause)).default([]),
   status: z.nativeEnum(OpportunityStatus).default(OpportunityStatus.OPEN),
 });
 
@@ -62,15 +63,16 @@ export async function POST(request: Request) {
         organizationId: data.organizationId,
         title: data.title,
         description: data.description,
-        category: data.category,
-        location: data.location,
+        skillsNeeded: data.skillsNeeded,
+        city: data.city,
+        state: data.state,
+        address: data.address,
         commitmentType: data.commitmentType,
-        estimatedHours: data.estimatedHours,
+        hoursCommitment: data.hoursCommitment,
         startDate: data.startDate ? new Date(data.startDate) : undefined,
         endDate: data.endDate ? new Date(data.endDate) : undefined,
-        isRemote: data.isRemote,
-        requiredSkills: data.requiredSkills,
-        volunteersNeeded: data.volunteersNeeded,
+        locationType: data.locationType,
+        causes: data.causes,
         status: data.status,
       },
     });

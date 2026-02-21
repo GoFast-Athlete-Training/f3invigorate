@@ -3,21 +3,25 @@
 import { useState } from "react";
 
 type Initial = {
-  skills: string[];
-  interests: string[];
+  photoURL: string;
+  bio: string;
+  phoneNumber: string;
+  city: string;
+  state: string;
+  myCauses: string[];
+  volunteerSkills: string;
   availability: string;
-  commitmentPreference: string;
-  remotePreference: boolean;
 };
 
 export default function VolunteerProfileForm({ initial }: { initial: Initial }) {
-  const [skills, setSkills] = useState(initial.skills.join(", "));
-  const [interests, setInterests] = useState(initial.interests.join(", "));
+  const [photoURL, setPhotoURL] = useState(initial.photoURL);
+  const [bio, setBio] = useState(initial.bio);
+  const [phoneNumber, setPhoneNumber] = useState(initial.phoneNumber);
+  const [city, setCity] = useState(initial.city);
+  const [state, setState] = useState(initial.state);
+  const [myCauses, setMyCauses] = useState(initial.myCauses.join(", "));
+  const [volunteerSkills, setVolunteerSkills] = useState(initial.volunteerSkills);
   const [availability, setAvailability] = useState(initial.availability);
-  const [commitmentPreference, setCommitmentPreference] = useState(
-    initial.commitmentPreference
-  );
-  const [remotePreference, setRemotePreference] = useState(initial.remotePreference);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
@@ -30,11 +34,14 @@ export default function VolunteerProfileForm({ initial }: { initial: Initial }) 
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          skills: skills.split(",").map((s) => s.trim()).filter(Boolean),
-          interests: interests.split(",").map((s) => s.trim()).filter(Boolean),
+          photoURL,
+          bio,
+          phoneNumber,
+          city,
+          state,
+          myCauses: myCauses.split(",").map((s) => s.trim().toUpperCase().replace(/ /g, "_")).filter(Boolean),
+          volunteerSkills,
           availability,
-          commitmentPreference,
-          remotePreference,
         }),
       });
       if (res.ok) setSaved(true);
@@ -46,23 +53,82 @@ export default function VolunteerProfileForm({ initial }: { initial: Initial }) 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 bg-white rounded-xl border border-gray-200 p-6">
       <div>
-        <label className="block text-sm font-medium text-gray-700">Skills (comma-separated)</label>
+        <label className="block text-sm font-medium text-gray-700">Profile Picture URL</label>
         <input
-          type="text"
-          value={skills}
-          onChange={(e) => setSkills(e.target.value)}
+          type="url"
+          value={photoURL}
+          onChange={(e) => setPhotoURL(e.target.value)}
           className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg"
-          placeholder="e.g. Mentoring, Construction, Events"
+          placeholder="https://example.com/profile.jpg"
+        />
+        <p className="mt-1 text-xs text-gray-500">
+          Link to your profile picture (from Firebase, Gravatar, or image host)
+        </p>
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700">Bio</label>
+        <textarea
+          value={bio}
+          onChange={(e) => setBio(e.target.value)}
+          rows={3}
+          className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg"
+          placeholder="Why you serve, personal story..."
         />
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700">Interests (comma-separated)</label>
+        <label className="block text-sm font-medium text-gray-700">Phone Number</label>
+        <input
+          type="tel"
+          value={phoneNumber}
+          onChange={(e) => setPhoneNumber(e.target.value)}
+          className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg"
+          placeholder="(704) 555-1234"
+        />
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700">City</label>
+          <input
+            type="text"
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg"
+            placeholder="Charlotte"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">State</label>
+          <input
+            type="text"
+            value={state}
+            onChange={(e) => setState(e.target.value)}
+            className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg"
+            placeholder="NC"
+            maxLength={2}
+          />
+        </div>
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700">Causes I Care About (comma-separated)</label>
         <input
           type="text"
-          value={interests}
-          onChange={(e) => setInterests(e.target.value)}
+          value={myCauses}
+          onChange={(e) => setMyCauses(e.target.value)}
           className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg"
-          placeholder="e.g. Youth, Veterans, Environment"
+          placeholder="e.g. Veterans, Youth Kids, Environment"
+        />
+        <p className="mt-1 text-xs text-gray-500">
+          Examples: Veterans, Youth Kids, Families of Fallen, Homeless Housing, Environment, etc.
+        </p>
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700">Volunteer Skills</label>
+        <textarea
+          value={volunteerSkills}
+          onChange={(e) => setVolunteerSkills(e.target.value)}
+          rows={2}
+          className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg"
+          placeholder="e.g. Mentoring, construction experience, event planning"
         />
       </div>
       <div>
@@ -70,35 +136,10 @@ export default function VolunteerProfileForm({ initial }: { initial: Initial }) 
         <textarea
           value={availability}
           onChange={(e) => setAvailability(e.target.value)}
-          rows={3}
+          rows={2}
           className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg"
-          placeholder="e.g. Weekends, Tuesday evenings"
+          placeholder="e.g. Weekends, Tuesday evenings, open to remote"
         />
-      </div>
-      <div>
-        <label className="block text-sm font-medium text-gray-700">Commitment preference</label>
-        <select
-          value={commitmentPreference}
-          onChange={(e) => setCommitmentPreference(e.target.value)}
-          className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg"
-        >
-          <option value="ONE_TIME">One-time</option>
-          <option value="RECURRING">Recurring</option>
-          <option value="PROJECT_BASED">Project-based</option>
-          <option value="ASYNC">Async</option>
-        </select>
-      </div>
-      <div className="flex items-center gap-2">
-        <input
-          type="checkbox"
-          id="remote"
-          checked={remotePreference}
-          onChange={(e) => setRemotePreference(e.target.checked)}
-          className="rounded border-gray-300"
-        />
-        <label htmlFor="remote" className="text-sm text-gray-700">
-          Open to remote opportunities
-        </label>
       </div>
       <div className="flex items-center gap-3">
         <button
