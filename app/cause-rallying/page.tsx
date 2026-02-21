@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Heart, Users, Share2, ChevronRight } from "lucide-react";
 
 const demoCauses = [
@@ -9,6 +10,7 @@ const demoCauses = [
       initials: "AM",
       role: "F3 PAX · Capital Region",
       avatarColor: "bg-red-600",
+      avatarUrl: "https://randomuser.me/api/portraits/men/32.jpg",
     },
     title: "Ben-David Warner Concert for Contigo Youth Club",
     story:
@@ -49,6 +51,7 @@ const demoCauses = [
       initials: "DC",
       role: "F3 PAX · Capital Region",
       avatarColor: "bg-blue-700",
+      avatarUrl: "https://randomuser.me/api/portraits/men/43.jpg",
     },
     title: "River Cleanup Equipment Fund",
     story:
@@ -89,6 +92,7 @@ const demoCauses = [
       initials: "SJ",
       role: "F3 PAX · Capital Region",
       avatarColor: "bg-green-700",
+      avatarUrl: "https://randomuser.me/api/portraits/men/52.jpg",
     },
     title: "Youth Mentorship Supplies Drive",
     story:
@@ -156,11 +160,15 @@ function CauseCard({ cause }: { cause: (typeof demoCauses)[0] }) {
       <div className="p-5">
         {/* Organizer */}
         <div className="flex items-center gap-3">
-          <span
-            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white ${cause.organizer.avatarColor}`}
-          >
-            {cause.organizer.initials}
-          </span>
+          <div className="relative h-10 w-10 shrink-0 rounded-full overflow-hidden border border-gray-200">
+            <Image
+              src={cause.organizer.avatarUrl}
+              alt={cause.organizer.name}
+              width={40}
+              height={40}
+              className="object-cover"
+            />
+          </div>
           <div>
             <p className="text-sm font-semibold text-gray-900">{cause.organizer.name}</p>
             <p className="text-xs text-gray-500">{cause.organizer.role}</p>

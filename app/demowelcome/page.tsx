@@ -2,13 +2,6 @@ import Link from "next/link";
 
 const cards = [
   {
-    title: "See Example Profile",
-    description:
-      "View how individual users see their stats and stay engaged with service activity roll-ups.",
-    href: "/profile-example",
-    cta: "Open Example Profile",
-  },
-  {
     title: "AO-organized Projects",
     description:
       "Hydrates one example project container so you can see the AO project flow, who is joining, and detail behavior.",
@@ -28,6 +21,13 @@ const cards = [
       "Explore cause-focused fundraising and personal impact campaigns for local and national needs.",
     href: "/cause-rallying",
     cta: "Open Cause Rallying",
+  },
+  {
+    title: "See Example Profile",
+    description:
+      "View how individual users see their stats and stay engaged with service activity roll-ups.",
+    href: "/profile-example",
+    cta: "Open Example Profile",
   },
   {
     title: "See AO Leaderboard",
