@@ -103,10 +103,10 @@ Detail view includes full description and RSVP action.
 
 ## Information Architecture (MVP)
 
-- `/f3service-demo` → splash/start
-- `/f3service-demo/ao` → AO lead dashboard (container admin view)
-- `/f3service-demo/projects/[slug]` → project detail + membership
-- `/f3service-demo/profile` → personal totals (hours + participation)
+- `/` → splash/start
+- `/demowelcome` → 3F Impact Hub front door
+- `/project/[slug]` → public project container + membership
+- `/ao-leaderboard` → AO leaderboard view
 
 ---
 

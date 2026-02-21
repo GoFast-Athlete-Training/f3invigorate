@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
-export default function LegacyF3ServiceDemoPage() {
+export default function LegacyF3ServiceDemoCatchAllPage() {
   redirect("/demowelcome");
 }
