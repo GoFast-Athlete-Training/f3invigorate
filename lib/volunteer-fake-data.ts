@@ -13,6 +13,7 @@ export type DisplayOpportunity = {
   commitmentType: string;
   isRemote: boolean;
   location?: string | null;
+  timeCommitment?: string | null; // human-readable display, e.g. "One Saturday", "2 hrs/week"
 };
 
 export const FAKE_OPPORTUNITIES: DisplayOpportunity[] = [
@@ -27,6 +28,7 @@ export const FAKE_OPPORTUNITIES: DisplayOpportunity[] = [
     commitmentType: "RECURRING",
     isRemote: false,
     location: "Arlington, VA",
+    timeCommitment: "2 hrs/week",
   },
   {
     id: null,
@@ -39,6 +41,7 @@ export const FAKE_OPPORTUNITIES: DisplayOpportunity[] = [
     commitmentType: "ONE_TIME",
     isRemote: false,
     location: "Washington, DC",
+    timeCommitment: "One Saturday",
   },
   {
     id: null,
@@ -51,6 +54,7 @@ export const FAKE_OPPORTUNITIES: DisplayOpportunity[] = [
     commitmentType: "RECURRING",
     isRemote: false,
     location: "Arlington, VA",
+    timeCommitment: "3 hrs/shift",
   },
   {
     id: null,
@@ -63,6 +67,7 @@ export const FAKE_OPPORTUNITIES: DisplayOpportunity[] = [
     commitmentType: "ONE_TIME",
     isRemote: false,
     location: "Washington, DC",
+    timeCommitment: "One Saturday morning",
   },
   {
     id: null,
@@ -75,6 +80,7 @@ export const FAKE_OPPORTUNITIES: DisplayOpportunity[] = [
     commitmentType: "RECURRING",
     isRemote: false,
     location: "Washington, DC",
+    timeCommitment: "4 hrs/week",
   },
   {
     id: null,
@@ -86,5 +92,6 @@ export const FAKE_OPPORTUNITIES: DisplayOpportunity[] = [
     category: "MENTORSHIP",
     commitmentType: "RECURRING",
     isRemote: true,
+    timeCommitment: "1–2 hrs/week",
   },
 ];

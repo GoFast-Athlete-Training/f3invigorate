@@ -31,10 +31,16 @@ type Props = {
   initialMembers: MemberView[];
 };
 
-const demoViewer: MemberView = {
+const projectLead: MemberView = {
   id: "viewer-demo",
   f3Name: "Project Q",
   avatarUrl: "https://randomuser.me/api/portraits/men/83.jpg",
+};
+
+const demoJoiner: MemberView = {
+  id: "joiner-demo",
+  f3Name: "River Rat",
+  avatarUrl: "https://randomuser.me/api/portraits/men/86.jpg",
 };
 
 export default function ProjectOpportunityClient({
@@ -82,18 +88,18 @@ export default function ProjectOpportunityClient({
     ];
   });
   const [isJoined, setIsJoined] = useState(
-    initialMembers.some((member) => member.id === demoViewer.id)
+    initialMembers.some((member) => member.id === demoJoiner.id)
   );
 
   const joinLabel = useMemo(() => (isJoined ? "Joined" : "Join this Project"), [isJoined]);
 
   const handleJoinToggle = () => {
     if (isJoined) {
-      setMembers((prev) => prev.filter((member) => member.id !== demoViewer.id));
+      setMembers((prev) => prev.filter((member) => member.id !== demoJoiner.id));
       setIsJoined(false);
       return;
     }
-    setMembers((prev) => [demoViewer, ...prev]);
+    setMembers((prev) => [demoJoiner, ...prev]);
     setIsJoined(true);
   };
 
@@ -106,8 +112,8 @@ export default function ProjectOpportunityClient({
       ...prev,
       {
         id: `msg-${now.getTime()}`,
-        authorF3Name: demoViewer.f3Name,
-        authorAvatarUrl: demoViewer.avatarUrl,
+        authorF3Name: demoJoiner.f3Name,
+        authorAvatarUrl: demoJoiner.avatarUrl,
         text: trimmed,
         timeLabel: now.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }),
       },
@@ -189,15 +195,15 @@ export default function ProjectOpportunityClient({
       <aside className="rounded-xl border border-gray-200 bg-white p-6">
         <div className="mb-5 rounded-lg border border-gray-200 bg-gray-50 p-3">
           <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
-            You&apos;re viewing as
+            Project Lead
           </p>
           <div className="mt-2 flex items-center gap-3">
             <img
-              src={demoViewer.avatarUrl}
-              alt={demoViewer.f3Name}
+              src={projectLead.avatarUrl}
+              alt={projectLead.f3Name}
               className="h-10 w-10 rounded-full border border-gray-200"
             />
-            <p className="text-sm font-semibold text-gray-900">{demoViewer.f3Name}</p>
+            <p className="text-sm font-semibold text-gray-900">{projectLead.f3Name}</p>
           </div>
         </div>
 
