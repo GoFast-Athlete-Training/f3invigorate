@@ -40,6 +40,18 @@ export default function RootSplash() {
               Browse opportunities →
             </span>
           </Link>
+        <Link
+          href="/f3service-demo"
+          className="block p-6 bg-blue-50 border-2 border-blue-200 rounded-xl hover:border-blue-300 hover:shadow-md transition"
+        >
+          <h2 className="text-xl font-bold text-blue-900 mb-1">Service Engine Demo</h2>
+          <p className="text-sm text-blue-700">
+            AO dashboard, event RSVP views, profile totals, and org template adoption flow.
+          </p>
+          <span className="mt-3 inline-block text-sm font-medium text-blue-700">
+            Open demo →
+          </span>
+        </Link>
         </div>
       </main>
     </div>
