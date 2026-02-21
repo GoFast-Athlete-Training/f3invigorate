@@ -2,11 +2,11 @@ import Link from "next/link";
 
 const cards = [
   {
-    title: "Example Profile",
+    title: "See Example Profile",
     description:
-      "See how individual users will view their stats and stay engaged.",
+      "View how individual users see their stats and stay engaged with service activity roll-ups.",
     href: "/profile-example",
-    cta: "View Profile Example",
+    cta: "Open Example Profile",
   },
   {
     title: "AO-organized Projects",
