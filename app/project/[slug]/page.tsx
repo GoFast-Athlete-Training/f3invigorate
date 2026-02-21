@@ -2,14 +2,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
-  formatDate,
   getAo,
   getF3ProjectBySlug,
   getMembershipsForProject,
-  getOpportunity,
-  getOrg,
   getUser,
 } from "@/lib/f3service-demo-data";
+import ProjectOpportunityClient from "./ProjectOpportunityClient";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -24,10 +22,30 @@ export default async function PublicProjectContainerPage({ params }: Props) {
   }
 
   const ao = getAo(project.aoId);
-  const template = getOpportunity(project.opportunityId);
-  const org = template ? getOrg(template.orgId) : null;
   const members = getMembershipsForProject(project.f3ProjectId);
   const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(project.googleMapsPlace)}`;
+  const startDate = new Date(project.startTime);
+  const endDate = new Date(project.endTime ?? project.startTime);
+  const dateLabel = `${startDate.getMonth() + 1}/${startDate.getDate()}/${startDate.getFullYear()}`;
+  const startTimeLabel = startDate.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+  });
+  const endTimeLabel = endDate.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+  });
+  const initialMembers = members
+    .map((membership) => {
+      const user = getUser(membership.userId);
+      if (!user) return null;
+      return {
+        id: user.id,
+        f3Name: user.f3Name,
+        avatarUrl: user.avatarUrl,
+      };
+    })
+    .filter((member): member is { id: string; f3Name: string; avatarUrl: string } => !!member);
 
   return (
     <main className="min-h-screen bg-gray-50">
@@ -43,7 +61,7 @@ export default async function PublicProjectContainerPage({ params }: Props) {
             />
             <div>
               <p className="text-sm font-semibold text-gray-900">F3 Capital Impact</p>
-              <p className="text-xs text-gray-500">Public Project Container</p>
+              <p className="text-xs text-gray-500">Project Opportunity</p>
             </div>
           </div>
           <Link href="/" className="text-sm text-blue-600 hover:underline">
@@ -52,103 +70,25 @@ export default async function PublicProjectContainerPage({ params }: Props) {
         </div>
       </header>
 
-      <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-6 px-4 py-8 lg:grid-cols-3">
-        <section className="rounded-xl border border-gray-200 bg-white p-6 lg:col-span-2">
-          <div className="mb-5 overflow-hidden rounded-xl border border-gray-200">
-            <img
-              src={project.photoUrl}
-              alt={project.title}
-              className="h-56 w-full object-cover sm:h-72"
-            />
-          </div>
-
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">{project.title}</h1>
-              <p className="mt-1 text-sm text-gray-600">
-                {`AO: ${ao?.name ?? "Unassigned"}`} · {org?.name ?? "Community partner"}
-              </p>
-            </div>
-            <span className="inline-flex rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-800">
-              {!project.isCompleted ? "OPEN TO JOIN" : "COMPLETED"}
-            </span>
-          </div>
-
-          <div className="mt-6 grid grid-cols-1 gap-3 text-sm text-gray-700 sm:grid-cols-3">
-            <div className="rounded-lg border border-gray-200 p-3">
-              <p className="text-xs text-gray-500">Project Name</p>
-              <p className="font-medium text-gray-900">{project.title}</p>
-            </div>
-            <div className="rounded-lg border border-gray-200 p-3">
-              <p className="text-xs text-gray-500">Start Time</p>
-              <p className="font-medium text-gray-900">{formatDate(project.startTime)}</p>
-            </div>
-            <div className="rounded-lg border border-gray-200 p-3">
-              <p className="text-xs text-gray-500">Hours Working</p>
-              <p className="font-medium text-gray-900">{project.hoursWorking}h</p>
-            </div>
-            <div className="rounded-lg border border-gray-200 p-3 sm:col-span-3">
-              <p className="text-xs text-gray-500">Location</p>
-              <div className="mt-1 flex flex-wrap items-center justify-between gap-2">
-                <p className="font-medium text-gray-900">{project.locationName}</p>
-                <a
-                  href={mapUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-xs font-semibold text-blue-600 hover:underline"
-                >
-                  Open in Google Maps
-                </a>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-6">
-            <h2 className="text-lg font-semibold text-gray-900">Description</h2>
-            <p className="mt-2 text-gray-700">{project.description}</p>
-          </div>
-
-          <div className="mt-8 flex flex-wrap items-center gap-3">
-            <button
-              type="button"
-              className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
-            >
-              Join Project
-            </button>
-            <p className="text-sm text-gray-500">Demo mode: public hydration only.</p>
-          </div>
-        </section>
-
-        <aside className="rounded-xl border border-gray-200 bg-white p-6">
-          <h2 className="text-lg font-semibold text-gray-900">Who&apos;s Joining</h2>
-          <p className="mt-1 text-sm text-gray-600">{members.length} members joined</p>
-          <ul className="mt-4 space-y-3">
-            {members.map((membership) => {
-              const user = getUser(membership.userId);
-              return (
-                <li
-                  key={membership.id}
-                  className="rounded-lg border border-gray-100 bg-gray-50 p-3"
-                >
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={user?.avatarUrl ?? "https://api.dicebear.com/9.x/adventurer/svg?seed=F3Him"}
-                      alt={user?.f3Name ?? "F3 HIM"}
-                      className="h-10 w-10 rounded-full border border-gray-200 bg-white"
-                    />
-                    <div>
-                      <p className="text-sm font-semibold text-gray-900">
-                        {user?.f3Name ?? user?.name ?? membership.userId}
-                      </p>
-                      <p className="text-xs text-gray-600">F3 HIM</p>
-                    </div>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-        </aside>
-      </div>
+      <ProjectOpportunityClient
+        title={project.title}
+        sponsoringAo={ao?.name ? `The ${ao.name}` : "Unassigned"}
+        photoUrl={project.photoUrl}
+        description={project.description}
+        whatYoullDo={
+          project.whatYoullDo ??
+          "Show up ready to serve, work with your AO brothers, and complete community support tasks."
+        }
+        dateLabel={dateLabel}
+        startTimeLabel={startTimeLabel}
+        endTimeLabel={endTimeLabel}
+        address={project.address ?? project.locationName}
+        postProjectCoffeeLocation={
+          project.postProjectCoffeeLocation ?? "Compass Coffee"
+        }
+        mapUrl={mapUrl}
+        initialMembers={initialMembers}
+      />
     </main>
   );
 }

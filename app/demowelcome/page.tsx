@@ -33,41 +33,41 @@ const cards = [
 
 export default function DemoWelcomePage() {
   return (
-    <main className="min-h-screen bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-800 text-white">
-      <div className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6">
-        <div className="mb-10 max-w-4xl">
+    <main className="h-screen overflow-hidden bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-800 text-white">
+      <div className="mx-auto flex h-full w-full max-w-6xl flex-col px-4 py-6 sm:px-6 sm:py-7">
+        <div className="mb-5 max-w-5xl">
           <h1 className="text-3xl font-bold sm:text-4xl">
             Welcome to the 3F Impact Hub
           </h1>
-          <p className="mt-4 text-white/85">
+          <p className="mt-2 text-sm leading-relaxed text-white/85 sm:text-base">
             Welcome to the 3F Impact Hub where each AO is motivated to create projects in
             their local communities and give back.
           </p>
-          <p className="mt-3 text-white/85">
+          <p className="mt-2 text-sm leading-relaxed text-white/85 sm:text-base">
             This hub also functions as a means for individuals to find opportunities (think
             Volunteer Match) and to raise funds for causes they personally support.
           </p>
-          <p className="mt-3 text-white/85">
+          <p className="mt-2 text-sm leading-relaxed text-white/85 sm:text-base">
             Demo geography is focused on Washington, DC and Arlington, VA to reflect the
             F3 Capital region.
           </p>
-          <p className="mt-3 text-white/70">
+          <p className="mt-2 text-sm leading-relaxed text-white/70 sm:text-base">
             This is a demo experience powered by fake data so you can get a feel for how it
             could work and provide meaningful feedback.
           </p>
         </div>
 
-        <section className="grid grid-cols-1 gap-5 md:grid-cols-2">
+        <section className="grid flex-1 grid-cols-1 gap-4 md:grid-cols-2">
           {cards.map((card) => (
             <article
               key={card.title}
-              className="rounded-xl border border-white/20 bg-black/30 p-6 backdrop-blur-sm"
+              className="rounded-xl border border-white/20 bg-black/30 p-4 backdrop-blur-sm sm:p-5"
             >
-              <h2 className="text-xl font-semibold text-white">{card.title}</h2>
-              <p className="mt-2 text-sm text-white/75">{card.description}</p>
+              <h2 className="text-lg font-semibold text-white sm:text-xl">{card.title}</h2>
+              <p className="mt-1 text-sm leading-relaxed text-white/75">{card.description}</p>
               <Link
                 href={card.href}
-                className="mt-5 inline-flex rounded-lg bg-white px-4 py-2 text-sm font-semibold text-black transition hover:bg-white/90"
+                className="mt-3 inline-flex rounded-lg bg-white px-3 py-1.5 text-sm font-semibold text-black transition hover:bg-white/90"
               >
                 {card.cta}
               </Link>

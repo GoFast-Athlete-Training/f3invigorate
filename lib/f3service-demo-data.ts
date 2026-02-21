@@ -14,7 +14,6 @@ export type User = {
   name: string;
   f3Name: string;
   avatarUrl: string;
-  email: string;
   aoId: string;
   totalHours: number;
   totalFundsRaised: number;
@@ -42,14 +41,19 @@ export type OpportunityTemplate = {
 
 export type F3Project = {
   f3ProjectId: string;
+  slug?: string;
   opportunityId: string;
   aoId: string;
   title: string;
   startTime: string;
+  endTime?: string;
   hoursWorking: number;
   description: string;
+  whatYoullDo?: string;
   photoUrl: string;
   locationName: string;
+  address?: string;
+  postProjectCoffeeLocation?: string;
   googleMapsPlace: string;
   isCompleted: boolean;
   createdAt: string;
@@ -112,8 +116,7 @@ export const users: User[] = [
     id: "u-mid-1",
     name: "Avery Quinn",
     f3Name: "Ground Hog",
-    avatarUrl: "https://api.dicebear.com/9.x/adventurer/svg?seed=GroundHog",
-    email: "avery@example.org",
+    avatarUrl: "https://randomuser.me/api/portraits/men/12.jpg",
     aoId: "ao-patriot",
     totalHours: 16,
     totalFundsRaised: 0,
@@ -123,8 +126,7 @@ export const users: User[] = [
     id: "u-mid-2",
     name: "Jordan Reyes",
     f3Name: "Sling Shot",
-    avatarUrl: "https://api.dicebear.com/9.x/adventurer/svg?seed=SlingShot",
-    email: "jordan@example.org",
+    avatarUrl: "https://randomuser.me/api/portraits/men/24.jpg",
     aoId: "ao-patriot",
     totalHours: 16,
     totalFundsRaised: 0,
@@ -134,8 +136,7 @@ export const users: User[] = [
     id: "u-mid-3",
     name: "Riley Park",
     f3Name: "Iron Mike",
-    avatarUrl: "https://api.dicebear.com/9.x/adventurer/svg?seed=IronMike",
-    email: "riley@example.org",
+    avatarUrl: "https://randomuser.me/api/portraits/men/31.jpg",
     aoId: "ao-patriot",
     totalHours: 16,
     totalFundsRaised: 0,
@@ -145,8 +146,7 @@ export const users: User[] = [
     id: "u-mid-4",
     name: "Mason Lee",
     f3Name: "Torch",
-    avatarUrl: "https://api.dicebear.com/9.x/adventurer/svg?seed=Torch",
-    email: "mason@example.org",
+    avatarUrl: "https://randomuser.me/api/portraits/men/45.jpg",
     aoId: "ao-olympus",
     totalHours: 16,
     totalFundsRaised: 0,
@@ -156,8 +156,7 @@ export const users: User[] = [
     id: "u-mid-5",
     name: "Taylor Chen",
     f3Name: "Bridge",
-    avatarUrl: "https://api.dicebear.com/9.x/adventurer/svg?seed=Bridge",
-    email: "taylor@example.org",
+    avatarUrl: "https://randomuser.me/api/portraits/men/53.jpg",
     aoId: "ao-olympus",
     totalHours: 0,
     totalFundsRaised: 0,
@@ -167,8 +166,7 @@ export const users: User[] = [
     id: "u-south-1",
     name: "Noah Rivera",
     f3Name: "Anchor",
-    avatarUrl: "https://api.dicebear.com/9.x/adventurer/svg?seed=Anchor",
-    email: "noah@example.org",
+    avatarUrl: "https://randomuser.me/api/portraits/men/61.jpg",
     aoId: "ao-ignite",
     totalHours: 0,
     totalFundsRaised: 0,
@@ -178,8 +176,7 @@ export const users: User[] = [
     id: "u-south-2",
     name: "Maya Patel",
     f3Name: "Falcon",
-    avatarUrl: "https://api.dicebear.com/9.x/adventurer/svg?seed=Falcon",
-    email: "maya@example.org",
+    avatarUrl: "https://randomuser.me/api/portraits/men/67.jpg",
     aoId: "ao-ignite",
     totalHours: 0,
     totalFundsRaised: 0,
@@ -189,8 +186,7 @@ export const users: User[] = [
     id: "u-south-3",
     name: "Eli Brooks",
     f3Name: "Hammer",
-    avatarUrl: "https://api.dicebear.com/9.x/adventurer/svg?seed=Hammer",
-    email: "eli@example.org",
+    avatarUrl: "https://randomuser.me/api/portraits/men/71.jpg",
     aoId: "ao-ignite",
     totalHours: 0,
     totalFundsRaised: 0,
@@ -198,10 +194,9 @@ export const users: User[] = [
   },
   {
     id: "u-south-4",
-    name: "Samira Khan",
+    name: "Marcus Cole",
     f3Name: "Delta",
-    avatarUrl: "https://api.dicebear.com/9.x/adventurer/svg?seed=Delta",
-    email: "samira@example.org",
+    avatarUrl: "https://randomuser.me/api/portraits/men/79.jpg",
     aoId: "ao-ignite",
     totalHours: 0,
     totalFundsRaised: 0,
@@ -269,17 +264,23 @@ export const opportunities: OpportunityTemplate[] = [
 export const projects: F3Project[] = [
   {
     f3ProjectId: "f3proj-rock-creek-restoration",
+    slug: "rock-creek-park-restoration",
     opportunityId: "opp-river",
     aoId: "ao-patriot",
-    title: "Rock Creek Park Restoration",
-    startTime: daysFromNow(3),
+    title: "Banneker Park Cleanup",
+    startTime: "2026-03-02T08:00:00.000-05:00",
+    endTime: "2026-03-02T11:00:00.000-05:00",
     hoursWorking: 3,
     description:
-      "Join AO: Patriot for a Saturday restoration effort in Rock Creek Park, including trail edge cleanup, litter removal, and community beautification.",
+      "Join The Patriot for a local park cleanup focused on restoring Banneker Park and serving the surrounding neighborhood.",
+    whatYoullDo:
+      "Pick up litter, clear light debris, and help with basic beautification tasks around walking paths and common areas.",
     photoUrl:
-      "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=1600&q=80",
-    locationName: "Rock Creek Park, Washington, DC",
-    googleMapsPlace: "Rock Creek Park Washington DC",
+      "https://images.unsplash.com/photo-1618477462146-050d2767eac4?auto=format&fit=crop&w=1600&q=80",
+    locationName: "Banneker Park, Washington, DC",
+    address: "2500 Georgia Ave NW, Washington, DC 20001",
+    postProjectCoffeeLocation: "Compass Coffee - Shaw",
+    googleMapsPlace: "Banneker Park Washington DC",
     isCompleted: false,
     createdAt: daysAgo(2),
   },
@@ -355,7 +356,9 @@ export const getF3Project = (f3ProjectId: string) =>
 export const getF3ProjectBySlug = (slugOrId: string) =>
   projects.find(
     (project) =>
-      project.f3ProjectId === slugOrId || slugify(project.title) === slugOrId
+      project.f3ProjectId === slugOrId ||
+      project.slug === slugOrId ||
+      slugify(project.title) === slugOrId
   );
 
 export const getMembershipsForProject = (f3ProjectId: string) =>
