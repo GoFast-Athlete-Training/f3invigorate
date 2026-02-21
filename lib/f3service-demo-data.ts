@@ -12,6 +12,8 @@ export type Ao = {
 export type User = {
   id: string;
   name: string;
+  f3Name: string;
+  avatarUrl: string;
   email: string;
   aoId: string;
   totalHours: number;
@@ -46,6 +48,9 @@ export type F3Project = {
   startTime: string;
   hoursWorking: number;
   description: string;
+  photoUrl: string;
+  locationName: string;
+  googleMapsPlace: string;
   isCompleted: boolean;
   createdAt: string;
 };
@@ -77,17 +82,25 @@ const daysAgo = (days: number) => daysFromNow(-days);
 
 export const aos: Ao[] = [
   {
-    id: "ao-midtown",
-    name: "Midtown AO",
-    city: "Chicago",
+    id: "ao-patriot",
+    name: "Patriot",
+    city: "Washington, DC",
     quarterlyGoalHours: 400,
     quarterlyGoalFunds: 0,
     createdAt: daysAgo(60),
   },
   {
-    id: "ao-southside",
-    name: "Southside AO",
-    city: "Chicago",
+    id: "ao-olympus",
+    name: "Olympus",
+    city: "Washington, DC",
+    quarterlyGoalHours: 300,
+    quarterlyGoalFunds: 0,
+    createdAt: daysAgo(60),
+  },
+  {
+    id: "ao-ignite",
+    name: "Ignite",
+    city: "Arlington, VA",
     quarterlyGoalHours: 250,
     quarterlyGoalFunds: 0,
     createdAt: daysAgo(60),
@@ -98,8 +111,10 @@ export const users: User[] = [
   {
     id: "u-mid-1",
     name: "Avery Quinn",
+    f3Name: "Ground Hog",
+    avatarUrl: "https://api.dicebear.com/9.x/adventurer/svg?seed=GroundHog",
     email: "avery@example.org",
-    aoId: "ao-midtown",
+    aoId: "ao-patriot",
     totalHours: 16,
     totalFundsRaised: 0,
     createdAt: daysAgo(45),
@@ -107,8 +122,10 @@ export const users: User[] = [
   {
     id: "u-mid-2",
     name: "Jordan Reyes",
+    f3Name: "Sling Shot",
+    avatarUrl: "https://api.dicebear.com/9.x/adventurer/svg?seed=SlingShot",
     email: "jordan@example.org",
-    aoId: "ao-midtown",
+    aoId: "ao-patriot",
     totalHours: 16,
     totalFundsRaised: 0,
     createdAt: daysAgo(42),
@@ -116,8 +133,10 @@ export const users: User[] = [
   {
     id: "u-mid-3",
     name: "Riley Park",
+    f3Name: "Iron Mike",
+    avatarUrl: "https://api.dicebear.com/9.x/adventurer/svg?seed=IronMike",
     email: "riley@example.org",
-    aoId: "ao-midtown",
+    aoId: "ao-patriot",
     totalHours: 16,
     totalFundsRaised: 0,
     createdAt: daysAgo(40),
@@ -125,8 +144,10 @@ export const users: User[] = [
   {
     id: "u-mid-4",
     name: "Mason Lee",
+    f3Name: "Torch",
+    avatarUrl: "https://api.dicebear.com/9.x/adventurer/svg?seed=Torch",
     email: "mason@example.org",
-    aoId: "ao-midtown",
+    aoId: "ao-olympus",
     totalHours: 16,
     totalFundsRaised: 0,
     createdAt: daysAgo(38),
@@ -134,8 +155,10 @@ export const users: User[] = [
   {
     id: "u-mid-5",
     name: "Taylor Chen",
+    f3Name: "Bridge",
+    avatarUrl: "https://api.dicebear.com/9.x/adventurer/svg?seed=Bridge",
     email: "taylor@example.org",
-    aoId: "ao-midtown",
+    aoId: "ao-olympus",
     totalHours: 0,
     totalFundsRaised: 0,
     createdAt: daysAgo(36),
@@ -143,8 +166,10 @@ export const users: User[] = [
   {
     id: "u-south-1",
     name: "Noah Rivera",
+    f3Name: "Anchor",
+    avatarUrl: "https://api.dicebear.com/9.x/adventurer/svg?seed=Anchor",
     email: "noah@example.org",
-    aoId: "ao-southside",
+    aoId: "ao-ignite",
     totalHours: 0,
     totalFundsRaised: 0,
     createdAt: daysAgo(35),
@@ -152,8 +177,10 @@ export const users: User[] = [
   {
     id: "u-south-2",
     name: "Maya Patel",
+    f3Name: "Falcon",
+    avatarUrl: "https://api.dicebear.com/9.x/adventurer/svg?seed=Falcon",
     email: "maya@example.org",
-    aoId: "ao-southside",
+    aoId: "ao-ignite",
     totalHours: 0,
     totalFundsRaised: 0,
     createdAt: daysAgo(33),
@@ -161,8 +188,10 @@ export const users: User[] = [
   {
     id: "u-south-3",
     name: "Eli Brooks",
+    f3Name: "Hammer",
+    avatarUrl: "https://api.dicebear.com/9.x/adventurer/svg?seed=Hammer",
     email: "eli@example.org",
-    aoId: "ao-southside",
+    aoId: "ao-ignite",
     totalHours: 0,
     totalFundsRaised: 0,
     createdAt: daysAgo(31),
@@ -170,8 +199,10 @@ export const users: User[] = [
   {
     id: "u-south-4",
     name: "Samira Khan",
+    f3Name: "Delta",
+    avatarUrl: "https://api.dicebear.com/9.x/adventurer/svg?seed=Delta",
     email: "samira@example.org",
-    aoId: "ao-southside",
+    aoId: "ao-ignite",
     totalHours: 0,
     totalFundsRaised: 0,
     createdAt: daysAgo(30),
@@ -211,7 +242,7 @@ export const opportunities: OpportunityTemplate[] = [
     orgId: "org-river",
     title: "Monthly River Cleanup",
     description: "Template cleanup event for a river neighborhood service project.",
-    location: "Riverside Park",
+    location: "Rock Creek Park",
     isTemplate: true,
     createdAt: daysAgo(60),
   },
@@ -220,7 +251,7 @@ export const opportunities: OpportunityTemplate[] = [
     orgId: "org-veterans",
     title: "Food Sorting Volunteer Shift",
     description: "Template event for warehouse food sorting and prep.",
-    location: "Main Warehouse",
+    location: "Arlington Food Assistance Center",
     isTemplate: true,
     createdAt: daysAgo(60),
   },
@@ -229,7 +260,7 @@ export const opportunities: OpportunityTemplate[] = [
     orgId: "org-youth",
     title: "After School Mentoring",
     description: "Template event for recurring after-school mentoring sessions.",
-    location: "Lincoln Middle School",
+    location: "Kenmore Middle School",
     isTemplate: true,
     createdAt: daysAgo(60),
   },
@@ -237,56 +268,72 @@ export const opportunities: OpportunityTemplate[] = [
 
 export const projects: F3Project[] = [
   {
-    f3ProjectId: "f3proj-clean-up-demo",
+    f3ProjectId: "f3proj-rock-creek-restoration",
     opportunityId: "opp-river",
-    aoId: "ao-midtown",
-    title: "Clean Up Demo",
+    aoId: "ao-patriot",
+    title: "Rock Creek Park Restoration",
     startTime: daysFromNow(3),
     hoursWorking: 3,
     description:
-      "Public demo project page for F3 Capital Impact. Join this neighborhood cleanup effort and bring gloves and water.",
+      "Join AO: Patriot for a Saturday restoration effort in Rock Creek Park, including trail edge cleanup, litter removal, and community beautification.",
+    photoUrl:
+      "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=1600&q=80",
+    locationName: "Rock Creek Park, Washington, DC",
+    googleMapsPlace: "Rock Creek Park Washington DC",
     isCompleted: false,
     createdAt: daysAgo(2),
   },
   {
     f3ProjectId: "f3proj-mid-river",
     opportunityId: "opp-river",
-    aoId: "ao-midtown",
-    title: "Midtown River Push",
+    aoId: "ao-patriot",
+    title: "Patriot Creek Push",
     startTime: daysFromNow(10),
     hoursWorking: 4,
-    description: "City river cleanup led by Midtown AO with supplies provided on-site.",
+    description: "City river cleanup led by AO: Patriot with supplies provided on-site.",
+    photoUrl:
+      "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1600&q=80",
+    locationName: "Rock Creek Park, Washington, DC",
+    googleMapsPlace: "Rock Creek Park Washington DC",
     isCompleted: false,
     createdAt: daysFromNow(-10),
   },
   {
     f3ProjectId: "f3proj-south-serves",
     opportunityId: "opp-veterans",
-    aoId: "ao-southside",
-    title: "Southside Serves",
+    aoId: "ao-ignite",
+    title: "Forge Serves Arlington",
     startTime: daysFromNow(7),
     hoursWorking: 4,
     description: "Warehouse sorting project supporting veteran family food distribution.",
+    photoUrl:
+      "https://images.unsplash.com/photo-1481349518771-20055b2a7b24?auto=format&fit=crop&w=1600&q=80",
+    locationName: "Arlington Food Assistance Center, Arlington, VA",
+    googleMapsPlace: "Arlington Food Assistance Center Arlington VA",
     isCompleted: false,
     createdAt: daysFromNow(-8),
   },
   {
     f3ProjectId: "f3proj-mid-mentor",
     opportunityId: "opp-youth",
-    aoId: "ao-midtown",
+    aoId: "ao-patriot",
     title: "Mentor Launch Night",
     startTime: daysAgo(20),
     hoursWorking: 8,
-    description: "Kickoff mentoring night pairing Midtown HIMs with middle school students.",
+    description: "Kickoff mentoring night pairing AO HIMs with middle school students in Arlington.",
+    photoUrl:
+      "https://images.unsplash.com/photo-1529390079861-591de354faf5?auto=format&fit=crop&w=1600&q=80",
+    locationName: "Kenmore Middle School, Arlington, VA",
+    googleMapsPlace: "Kenmore Middle School Arlington VA",
     isCompleted: true,
     createdAt: daysAgo(30),
   },
 ];
 
 export const projectMemberships: ProjectMembership[] = [
-  { id: "pm-demo-1", f3ProjectId: "f3proj-clean-up-demo", userId: "u-mid-1", hoursLogged: 0, joinedAt: daysAgo(1) },
-  { id: "pm-demo-2", f3ProjectId: "f3proj-clean-up-demo", userId: "u-mid-2", hoursLogged: 0, joinedAt: daysAgo(1) },
-  { id: "pm-demo-3", f3ProjectId: "f3proj-clean-up-demo", userId: "u-mid-3", hoursLogged: 0, joinedAt: daysAgo(1) },
+  { id: "pm-demo-1", f3ProjectId: "f3proj-rock-creek-restoration", userId: "u-mid-1", hoursLogged: 0, joinedAt: daysAgo(1) },
+  { id: "pm-demo-2", f3ProjectId: "f3proj-rock-creek-restoration", userId: "u-mid-2", hoursLogged: 0, joinedAt: daysAgo(1) },
+  { id: "pm-demo-3", f3ProjectId: "f3proj-rock-creek-restoration", userId: "u-mid-3", hoursLogged: 0, joinedAt: daysAgo(1) },
   { id: "pm-1", f3ProjectId: "f3proj-mid-river", userId: "u-mid-1", hoursLogged: 0, joinedAt: daysAgo(1) },
   { id: "pm-2", f3ProjectId: "f3proj-mid-river", userId: "u-mid-2", hoursLogged: 0, joinedAt: daysAgo(1) },
   { id: "pm-3", f3ProjectId: "f3proj-mid-river", userId: "u-mid-3", hoursLogged: 0, joinedAt: daysAgo(1) },

@@ -27,6 +27,7 @@ export default async function PublicProjectContainerPage({ params }: Props) {
   const template = getOpportunity(project.opportunityId);
   const org = template ? getOrg(template.orgId) : null;
   const members = getMembershipsForProject(project.f3ProjectId);
+  const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(project.googleMapsPlace)}`;
 
   return (
     <main className="min-h-screen bg-gray-50">
@@ -53,11 +54,19 @@ export default async function PublicProjectContainerPage({ params }: Props) {
 
       <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-6 px-4 py-8 lg:grid-cols-3">
         <section className="rounded-xl border border-gray-200 bg-white p-6 lg:col-span-2">
+          <div className="mb-5 overflow-hidden rounded-xl border border-gray-200">
+            <img
+              src={project.photoUrl}
+              alt={project.title}
+              className="h-56 w-full object-cover sm:h-72"
+            />
+          </div>
+
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">{project.title}</h1>
               <p className="mt-1 text-sm text-gray-600">
-                {ao?.name ?? "AO"} · {org?.name ?? "Community partner"}
+                {`AO: ${ao?.name ?? "Unassigned"}`} · {org?.name ?? "Community partner"}
               </p>
             </div>
             <span className="inline-flex rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-800">
@@ -77,6 +86,20 @@ export default async function PublicProjectContainerPage({ params }: Props) {
             <div className="rounded-lg border border-gray-200 p-3">
               <p className="text-xs text-gray-500">Hours Working</p>
               <p className="font-medium text-gray-900">{project.hoursWorking}h</p>
+            </div>
+            <div className="rounded-lg border border-gray-200 p-3 sm:col-span-3">
+              <p className="text-xs text-gray-500">Location</p>
+              <div className="mt-1 flex flex-wrap items-center justify-between gap-2">
+                <p className="font-medium text-gray-900">{project.locationName}</p>
+                <a
+                  href={mapUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-xs font-semibold text-blue-600 hover:underline"
+                >
+                  Open in Google Maps
+                </a>
+              </div>
             </div>
           </div>
 
@@ -107,10 +130,19 @@ export default async function PublicProjectContainerPage({ params }: Props) {
                   key={membership.id}
                   className="rounded-lg border border-gray-100 bg-gray-50 p-3"
                 >
-                  <p className="text-sm font-medium text-gray-900">
-                    {user?.name ?? membership.userId}
-                  </p>
-                  <p className="text-xs text-gray-600">{user?.email ?? "No email"}</p>
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={user?.avatarUrl ?? "https://api.dicebear.com/9.x/adventurer/svg?seed=F3Him"}
+                      alt={user?.f3Name ?? "F3 HIM"}
+                      className="h-10 w-10 rounded-full border border-gray-200 bg-white"
+                    />
+                    <div>
+                      <p className="text-sm font-semibold text-gray-900">
+                        {user?.f3Name ?? user?.name ?? membership.userId}
+                      </p>
+                      <p className="text-xs text-gray-600">F3 HIM</p>
+                    </div>
+                  </div>
                 </li>
               );
             })}

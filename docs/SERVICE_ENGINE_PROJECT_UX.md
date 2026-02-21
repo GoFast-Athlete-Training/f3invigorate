@@ -21,7 +21,7 @@ Turn service into a repeatable flow:
 
 Use a **container pattern** similar to cityrun/runcrew:
 
-- Container = AO service feed (e.g., Midtown AO Service)
+- Container = AO service feed (e.g., AO: The Patriot service feed)
 - Items in feed = projects/events
 - Members = AO PAX who join projects
 - Owner/Admin = AO lead

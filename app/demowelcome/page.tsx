@@ -2,11 +2,11 @@ import Link from "next/link";
 
 const cards = [
   {
-    title: "See AO Service",
+    title: "AO-organized Projects",
     description:
-      "Browse community projects run by each AO, view who is joining, and open project details.",
-    href: "/project/clean-up-demo",
-    cta: "Open AO Service",
+      "Hydrates one example project container so you can see the AO project flow, who is joining, and detail behavior.",
+    href: "/project/rock-creek-park-restoration",
+    cta: "Open Example Project Container",
   },
   {
     title: "See Individual Volunteer Match",
@@ -33,19 +33,27 @@ const cards = [
 
 export default function DemoWelcomePage() {
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className="min-h-screen bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-800 text-white">
       <div className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6">
         <div className="mb-10 max-w-4xl">
-          <h1 className="text-3xl font-bold text-gray-900 sm:text-4xl">
+          <h1 className="text-3xl font-bold sm:text-4xl">
             Welcome to the 3F Impact Hub
           </h1>
-          <p className="mt-4 text-gray-700">
+          <p className="mt-4 text-white/85">
             Welcome to the 3F Impact Hub where each AO is motivated to create projects in
             their local communities and give back.
           </p>
-          <p className="mt-3 text-gray-700">
+          <p className="mt-3 text-white/85">
             This hub also functions as a means for individuals to find opportunities (think
             Volunteer Match) and to raise funds for causes they personally support.
+          </p>
+          <p className="mt-3 text-white/85">
+            Demo geography is focused on Washington, DC and Arlington, VA to reflect the
+            F3 Capital region.
+          </p>
+          <p className="mt-3 text-white/70">
+            This is a demo experience powered by fake data so you can get a feel for how it
+            could work and provide meaningful feedback.
           </p>
         </div>
 
@@ -53,13 +61,13 @@ export default function DemoWelcomePage() {
           {cards.map((card) => (
             <article
               key={card.title}
-              className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm"
+              className="rounded-xl border border-white/20 bg-black/30 p-6 backdrop-blur-sm"
             >
-              <h2 className="text-xl font-semibold text-gray-900">{card.title}</h2>
-              <p className="mt-2 text-sm text-gray-600">{card.description}</p>
+              <h2 className="text-xl font-semibold text-white">{card.title}</h2>
+              <p className="mt-2 text-sm text-white/75">{card.description}</p>
               <Link
                 href={card.href}
-                className="mt-5 inline-flex rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+                className="mt-5 inline-flex rounded-lg bg-white px-4 py-2 text-sm font-semibold text-black transition hover:bg-white/90"
               >
                 {card.cta}
               </Link>
