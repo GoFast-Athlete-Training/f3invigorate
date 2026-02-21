@@ -1,13 +1,7 @@
 import Link from "next/link";
+import Image from "next/image";
 
 const cards = [
-  {
-    title: "Example User Profile",
-    description:
-      "See how PAX service activity rolls up across group projects and individual commitments.",
-    href: "#profile",
-    cta: "View Profile Example",
-  },
   {
     title: "AO-organized Projects",
     description:
@@ -65,6 +59,20 @@ export default function DemoWelcomePage() {
         </div>
 
         <section className="grid grid-cols-1 gap-4 md:grid-cols-2 mb-8">
+          {/* Example User Profile Card */}
+          <article className="rounded-xl border border-white/20 bg-black/30 p-4 backdrop-blur-sm sm:p-5">
+            <h2 className="text-lg font-semibold text-white sm:text-xl">Example User Profile</h2>
+            <p className="mt-1 text-sm leading-relaxed text-white/75">
+              See how PAX service activity rolls up across group projects and individual commitments.
+            </p>
+            <Link
+              href="#profile"
+              className="mt-3 inline-flex rounded-lg bg-white px-3 py-1.5 text-sm font-semibold text-black transition hover:bg-white/90"
+            >
+              View Profile Example
+            </Link>
+          </article>
+
           {cards.map((card) => (
             <article
               key={card.title}
@@ -82,12 +90,18 @@ export default function DemoWelcomePage() {
           ))}
         </section>
 
-        <section id="profile" className="mb-8">
+        <section id="profile" className="mb-8 scroll-mt-6">
           <h2 className="text-2xl font-bold mb-4">Example User Profile</h2>
           <div className="rounded-xl border border-white/20 bg-black/30 p-6 backdrop-blur-sm">
             <div className="flex items-start gap-4 mb-6">
-              <div className="w-16 h-16 rounded-full bg-blue-600 flex items-center justify-center text-2xl font-bold">
-                JF
+              <div className="relative w-20 h-20 rounded-full overflow-hidden border-2 border-white/20 flex-shrink-0">
+                <Image
+                  src="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?w=200&h=200&fit=crop&crop=faces"
+                  alt="John Fastlane Smith"
+                  width={80}
+                  height={80}
+                  className="object-cover"
+                />
               </div>
               <div className="flex-1">
                 <h3 className="text-xl font-bold">John &quot;Fastlane&quot; Smith</h3>
